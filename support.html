@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support us — FCG</title>
+<link rel="icon" href="assets/fcg-ball.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="support">
+<div id="site-header"></div>
+
+<main id="main">
+  <header class="phead">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html">FCG</a> / <span data-i18n="nav.support">Support us</span></div>
+      <h1 class="display" data-i18n="s.h1">Give a talent <span class="it blue">a real chance.</span></h1>
+      <div class="phead-grid">
+        <p class="lead" data-i18n="s.lead">Boots, coaching, documents, a plane ticket to a trial. Small things decide whether a gifted kid is ever seen. You can see exactly what your support does.</p>
+        <div><span class="concept-note" data-i18n="s.note">● Concept — no real payments are processed</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="sec" id="give" style="padding-top:clamp(48px,6vw,80px)">
+    <div class="wrap">
+      <div class="calc reveal">
+        <div class="calc-in">
+          <p class="kicker"><b>●</b> <span data-i18n="s.ck">Your contribution</span></p>
+          <div class="seg mt-s" id="freq" style="max-width:300px"><button data-v="once" data-i18n="s.once">One-time</button><button data-v="month" data-i18n="s.month">Monthly</button></div>
+          <div class="amount-big"><span>€</span><input id="amt" type="number" inputmode="numeric" min="5" max="5000" value="50" aria-label="Amount"><small id="per"></small></div>
+          <input type="range" class="big" id="amtR" min="5" max="1000" step="5" value="50" aria-label="Amount slider">
+          <div class="presets chips" id="presets"></div>
+          <div class="fgroup" style="margin-top:22px">
+            <label for="dest" data-i18n="s.dest">Where should it go?</label>
+            <select class="sel" id="dest"></select>
+          </div>
+          <button class="btn btn--blue mt-s" id="giveBtn" style="width:100%;justify-content:center"></button>
+          <p class="footnote" data-i18n="s.tax">FCG is a concept foundation. In a real setup, donations could be tax-deductible (ANBI status in the Netherlands).</p>
+        </div>
+        <div class="calc-out">
+          <p class="kicker" id="outK"></p>
+          <h2 class="h3 mt-s" id="outT" style="font-size:clamp(1.5rem,2.6vw,2.2rem)"></h2>
+          <div class="impact-list" id="impact"></div>
+          <p class="kicker" data-i18n="s.alk">How every euro is split</p>
+          <div class="alloc" id="alloc"></div>
+          <div class="alloc-leg" id="allocLeg"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker"><span class="num">§01</span><span data-i18n="s.s1k">Beyond money</span></span>
+        <h2 class="h2" data-i18n="s.s1t">Other ways to <span class="it blue">get on the pitch.</span></h2>
+      </div>
+      <div class="ways reveal">
+        <div><span class="kicker blue">01</span><h3 class="h3" data-i18n="s.w1t">Coach remotely</h3><p data-i18n="s.w1p">UEFA-licensed coach? Run monthly video sessions with our local coaches.</p><button class="linkarrow" style="background:none;border-width:0 0 1.5px" data-help="coach" data-i18n="s.w1b">Volunteer →</button></div>
+        <div><span class="kicker blue">02</span><h3 class="h3" data-i18n="s.w2t">Donate gear</h3><p data-i18n="s.w2p">Boots, balls, goalkeeper gloves, kits. Clubs: your last-season stock is gold in Juba or Goma.</p><button class="linkarrow" style="background:none;border-width:0 0 1.5px" data-help="gear" data-i18n="s.w2b">Offer gear →</button></div>
+        <div><span class="kicker blue">03</span><h3 class="h3" data-i18n="s.w3t">Lend your expertise</h3><p data-i18n="s.w3p">Immigration law, translation, sports medicine, data analysis — we need pro bono specialists.</p><button class="linkarrow" style="background:none;border-width:0 0 1.5px" data-help="pro" data-i18n="s.w3b">Join the network →</button></div>
+        <div><span class="kicker blue">04</span><h3 class="h3" data-i18n="s.w4t">Become a sponsor</h3><p data-i18n="s.w4p">Companies can sponsor a region, a tournament or the kit of a whole scouting programme.</p><button class="linkarrow" style="background:none;border-width:0 0 1.5px" data-help="sponsor" data-i18n="s.w4b">Sponsor →</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="pull reveal">
+        <cite data-i18n="s.qc">— Grace K., 17, now on trial in Antwerp (fictional)</cite>
+        <blockquote data-i18n="s.q">The first time I wore real boots I couldn’t stop looking at my feet. <em>Then I couldn’t stop scoring.</em></blockquote>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script src="js/support.js"></script>
+</body>
+</html>

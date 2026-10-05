@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FCG — Find Connect &amp; Grow</title>
+<meta name="description" content="Find Connect & Grow scouts football talent in conflict-affected regions and connects them to European clubs.">
+<link rel="icon" href="assets/fcg-ball.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home">
+<div id="site-header"></div>
+
+<main id="main">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-top">
+        <span class="kicker" data-i18n="h.k1"><b>●</b> Scouting live in 11 regions</span>
+        <button class="replay" id="replay" aria-label="Replay"><span data-i18n="h.replay">Replay the journey</span> ↻</button>
+      </div>
+      <div style="position:relative">
+        <div class="hero-curve" id="heroCurve" aria-hidden="true"></div>
+        <h1 class="display hero-title">
+          <span class="line"><span data-i18n="h.t1">Talent has</span></span>
+          <span class="line"><span data-i18n="h.t2">no borders.</span></span>
+          <span class="line"><span class="it" data-i18n="h.t3">Opportunity does.</span></span>
+        </h1>
+      </div>
+      <div class="hero-bottom">
+        <div class="ctaswrap">
+          <p class="lead" data-i18n="h.lead">Find Connect &amp; Grow scouts young footballers in war-torn and conflict-affected regions — and builds a safe, verified pathway to professional clubs in Europe.</p>
+          <div class="hero-ctas">
+            <a class="btn btn--blue" href="talents.html"><span data-i18n="h.cta1">Explore the talents</span> <span class="arr">→</span></a>
+            <a class="btn btn--ghost" href="clubs.html" data-i18n="h.cta2">I represent a club</a>
+          </div>
+        </div>
+        <div>
+          <p class="kicker" style="margin:0 0 10px" data-i18n="h.week">Spotlight of the week</p>
+          <a class="hero-spot" id="spot" href="#"></a>
+        </div>
+        <div>
+          <p class="kicker" style="margin:0 0 10px" data-i18n="h.newest">Newest in the portal</p>
+          <a class="hero-spot" id="spot2" href="#"></a>
+        </div>
+      </div>
+    </div>
+    <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+  </section>
+
+  <!-- 01 WHY -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker"><span class="num">§01</span><span data-i18n="h.s1k">The odds</span></span>
+        <h2 class="h2" data-i18n="h.s1t">Scouts go where the leagues are. <span class="it blue">Not where the talent is.</span></h2>
+      </div>
+      <div class="split">
+        <div class="reveal">
+          <div class="display bigstat">1/6<small data-i18n="h.stat">children worldwide grows up in a conflict zone.</small></div>
+          <p class="footnote" data-i18n="h.src">Source: Save the Children, “Stop the War on Children” (2023). More than 460 million children live in areas affected by conflict.</p>
+        </div>
+        <div class="story-col reveal" data-d="1">
+          <p data-i18n="h.p1">Every year, European clubs spend fortunes searching for the next great player. Their networks reach academies, tournaments and leagues — but they stop at the edge of the map where war begins.</p>
+          <p data-i18n="h.p2">Behind that edge, kids still play. On sand, on concrete, between ruins and in refugee camps. Some of them are extraordinary. Almost none of them will ever be seen.</p>
+          <p data-i18n="h.p3">FCG exists to close that gap. We train local scouts, verify talent with video and data, and walk every player — and their family — through a safe, legal route into European football.</p>
+          <p data-i18n="h.p4">Not charity. Not a shortcut. <strong>A fair chance.</strong></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 PATHWAY -->
+  <section class="sec" id="pathway">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker"><span class="num">§02</span><span data-i18n="h.s2k">The pathway</span></span>
+        <h2 class="h2" data-i18n="h.s2t">Four steps from a dusty pitch to a <span class="it blue">professional dressing room.</span></h2>
+      </div>
+      <div class="path">
+        <div class="path-sticky"><div>
+          <div class="display path-big"><span id="pathNum">01</span><span class="of">/04</span></div>
+          <div class="display path-name" id="pathName">Find</div>
+        </div></div>
+        <div class="path-steps" id="pathSteps">
+          <div class="path-rail"><i id="pathFill"></i></div>
+          <div class="pstep" data-n="01" data-name="Find" data-name-nl="Vinden">
+            <p class="kicker" data-i18n="h.ps1k">Step 01 · 0–3 months</p>
+            <h3 class="h3" data-i18n="h.ps1t">Find — local eyes, trained</h3>
+            <p data-i18n="h.ps1p">We recruit and train local coaches, teachers and NGO staff as FCG scouts. They know the neighbourhoods, the camp leagues and the street tournaments where talent hides.</p>
+            <ul><li data-i18n="h.ps1a">Local scout network</li><li data-i18n="h.ps1b">Camp &amp; street leagues</li><li data-i18n="h.ps1c">Remote footage</li></ul>
+          </div>
+          <div class="pstep" data-n="02" data-name="Verify" data-name-nl="Verifiëren">
+            <p class="kicker" data-i18n="h.ps2k">Step 02 · 1–2 months</p>
+            <h3 class="h3" data-i18n="h.ps2t">Verify — video, data, identity</h3>
+            <p data-i18n="h.ps2p">Every player is filmed in multiple matches and assessed by two independent analysts. We verify age and identity documents and get written consent from parents or guardians.</p>
+            <ul><li data-i18n="h.ps2a">2× analyst review</li><li data-i18n="h.ps2b">Age verification</li><li data-i18n="h.ps2c">Guardian consent</li></ul>
+          </div>
+          <div class="pstep" data-n="03" data-name="Connect" data-name-nl="Verbinden">
+            <p class="kicker" data-i18n="h.ps3k">Step 03 · 2–6 months</p>
+            <h3 class="h3" data-i18n="h.ps3t">Connect — clubs meet the player</h3>
+            <p data-i18n="h.ps3p">Verified profiles go live in the portal for partner clubs. Interested clubs request full dossiers and invite players for a supervised trial in Europe — visas, travel and welfare handled by FCG.</p>
+            <ul><li data-i18n="h.ps3a">Club portal</li><li data-i18n="h.ps3b">Supervised trials</li><li data-i18n="h.ps3c">Visa &amp; travel support</li></ul>
+          </div>
+          <div class="pstep" data-n="04" data-name="Grow" data-name-nl="Groeien">
+            <p class="kicker" data-i18n="h.ps4k">Step 04 · ongoing</p>
+            <h3 class="h3" data-i18n="h.ps4t">Grow — on and off the pitch</h3>
+            <p data-i18n="h.ps4p">Players who join a partner academy get education, language lessons, mental-health support and a dedicated welfare officer. We stay involved until they are settled — not just until they sign.</p>
+            <ul><li data-i18n="h.ps4a">Education &amp; language</li><li data-i18n="h.ps4b">Welfare officer</li><li data-i18n="h.ps4c">Family contact</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 MAP -->
+  <section class="mapband" id="map">
+    <div class="wrap">
+      <div class="sec-head two reveal">
+        <span class="kicker"><span class="num">§03</span><span data-i18n="h.s3k">Where we scout</span></span>
+        <h2 class="h2" data-i18n="h.s3t">Eleven regions. <span class="it" style="color:#8FB3FF">One destination.</span></h2>
+        <p class="lead" data-i18n="h.s3l">Click a region to see who we work with and which talents come from there.</p>
+      </div>
+      <div class="map-grid">
+        <div class="map-wrap reveal" id="mapWrap">
+          <div class="map-legend"><span><i style="background:#fff;border:2px solid #1463F3"></i><span data-i18n="h.leg1">Scouting region</span></span><span><i style="background:#8FB3FF"></i><span data-i18n="h.leg2">FCG hub</span></span><span><i style="border:1.5px solid #8FB3FF"></i><span data-i18n="h.leg3">Partner academy</span></span></div>
+        </div>
+        <aside class="map-panel reveal" data-d="1" id="mapPanel" aria-live="polite"></aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 FEATURED -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker"><span class="num">§04</span><span data-i18n="h.s4k">In the portal</span></span>
+        <h2 class="h2" data-i18n="h.s4t">Meet some of the players <span class="it blue">we believe in.</span></h2>
+      </div>
+      <div class="rail-head reveal">
+        <span class="concept-note" data-i18n="h.fict">● Fictional concept profiles · no photos by design</span>
+        <div class="rail-ctrl"><button id="railPrev" aria-label="Previous">←</button><button id="railNext" aria-label="Next">→</button></div>
+      </div>
+      <div class="rail reveal" id="rail"></div>
+      <p class="mt-m reveal"><a class="linkarrow" href="talents.html"><span data-i18n="h.all">Open the full talent portal</span> →</a></p>
+    </div>
+  </section>
+
+  <!-- NUMBERS -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="numbers reveal">
+        <div><b><span data-count="11">0</span></b><span data-i18n="h.n1">Regions active</span></div>
+        <div><b><span data-count="41">0</span></b><span data-i18n="h.n2">Trained local scouts</span></div>
+        <div><b><span data-count="140">0</span><sup>+</sup></b><span data-i18n="h.n3">Players in the pathway</span></div>
+        <div><b><span data-count="12">0</span></b><span data-i18n="h.n4">Partner academies</span></div>
+      </div>
+      <p class="footnote" data-i18n="h.nfoot">Concept figures for illustration purposes.</p>
+      <div class="pull reveal">
+        <cite data-i18n="h.qc">— Local scout, Juba</cite>
+        <blockquote data-i18n="h.q">They don’t need pity. They need <em>someone with a camera</em> and a club that’s willing to watch.</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 DOORS -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker"><span class="num">§05</span><span data-i18n="h.s5k">Get involved</span></span>
+        <h2 class="h2" data-i18n="h.s5t">Choose your way in.</h2>
+      </div>
+      <div class="doors reveal">
+        <a class="door" href="clubs.html"><span class="n">A</span><div><h3 data-i18n="h.d1t">For clubs &amp; scouts</h3><p data-i18n="h.d1p">Access verified talent from markets nobody else covers — ethically and transparently.</p></div><span class="go">→</span></a>
+        <a class="door" href="support.html"><span class="n">B</span><div><h3 data-i18n="h.d2t">Support a player</h3><p data-i18n="h.d2p">Fund training, boots, documents and trial trips. See exactly what your money does.</p></div><span class="go">→</span></a>
+        <a class="door" href="about.html#nominate"><span class="n">C</span><div><h3 data-i18n="h.d3t">Nominate a talent</h3><p data-i18n="h.d3p">Coach, teacher or NGO worker? Tell us about a player we should see.</p></div><span class="go">→</span></a>
+        <a class="door" href="about.html"><span class="n">D</span><div><h3 data-i18n="h.d4t">Read our mission</h3><p data-i18n="h.d4p">Why we started, how we protect players, and where we are going next.</p></div><span class="go">→</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>
