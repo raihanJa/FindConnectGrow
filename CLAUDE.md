@@ -42,6 +42,8 @@ Het is een **conceptwebsite**: alle talentprofielen, cijfers, teamleden, prijzen
 | `/talent` | — | Redirect naar het eerste talent |
 | `/clubs` | `ClubsPage` | Voor clubs: waarom FCG, procesaccordeon, compliance & safeguarding, partnerschappen (**Scout Access** €1.9k/seizoen, **Academy Partner** €7.5k/seizoen, **Founding Partner** op aanvraag), jouw shortlist (`#shortlist`), FAQ |
 | `/about` | `AboutPage` | Missie: manifest/verhaal, 4 principes, safeguarding-charter (`#safeguarding`), team (placeholder-rollen), roadmap, talent voordragen (`#nominate`) |
+| `/login` | `LoginPage` | Inloggen voor beheerders (Supabase Auth, gebruikersnaam + wachtwoord). `noindex` |
+| `/admin` | `AdminPage` | **Beheerportaal**: nieuw talent toevoegen (alle profielvelden, live preview met signature/OVR/radar) incl. zelf getekende tactical replays ([ReplayEditor](components/ReplayEditor.tsx)). Alleen voor accounts in `admins`; bewerken van bestaande profielen volgt later. `noindex` |
 | `/support` | `SupportPage` | Doneren (`#give`): eenmalig/maandelijks, bestemming, verdeling (62% programma's, 18% traject, 12% safeguarding & onderwijs, 8% operatie); andere manieren van helpen (coachen op afstand, materiaal, expertise, sponsoring) |
 
 Oude statische URL's (`/talents.html`, `/talent.html?id=…`, etc.) worden geredirect in [next.config.ts](next.config.ts).
@@ -56,6 +58,9 @@ Alle content staat in **Supabase** (project `fcg-find-connect-grow`, ref `ersoac
 - Tweetalige velden staan als `*_en`/`*_nl` kolommen en worden in de loader omgezet naar `Loc` (`{ en, nl }`). UI-teksten blijven in `lib/i18n.ts`.
 - Schema: [supabase/migrations/](supabase/migrations/), demodata: [supabase/seed.sql](supabase/seed.sql). Client: [lib/supabase.ts](lib/supabase.ts), types: [lib/database.types.ts](lib/database.types.ts) (bij schemawijziging opnieuw genereren), env in `.env.local` (zie `.env.example`).
 - **RLS**: content is publiek leesbaar, niet schrijfbaar. Formuliertabellen (`nominations`, `partnership_applications`, `help_offers`, `newsletter_subscribers`, `donations`) zijn **insert-only** voor bezoekers; dossieraanvragen via RPC `submit_dossier_request`. Nooit SELECT voor anon toevoegen: nominaties gaan over minderjarigen.
+- **Beheer**: login via Supabase Auth; een gebruikersnaam wordt intern `<naam>@fcg.example` ([lib/supabase-browser.ts](lib/supabase-browser.ts), sessie in localStorage `fcg:auth`). Schrijfrechten alleen als `auth.uid()` in `public.admins` staat (`is_admin()`); talenten worden aangemaakt via RPC `create_talent(p jsonb, p_traits text[])` (security invoker, maakt unieke slug, zet `sort` achteraan). Na opslaan ververst de server action [app/admin/actions.ts](app/admin/actions.ts) de ISR-cache (na admin-check op het token). Nieuwe beheerder: user aanmaken in Supabase Auth en `insert into public.admins (user_id) …`.
+- **Tactical replays**: sjablonen, types en helpers in [lib/replay.ts](lib/replay.ts), speler in [components/Reel.tsx](components/Reel.tsx). Getekende momenten staan in `talent_clips` (max 5 per talent; `ents`/`ball`/`events` als JSON, vorm gevalideerd door check-functies `valid_track`/`valid_clip_ents`/`valid_clip_events`) en komen als `Talent.clips` binnen. Talent zonder clips → `autoClips()` op basis van positie. `create_talent` krijgt de clips mee als `p.clips`.
+- **Supabase MCP**: migraties met `drop`/destructieve SQL worden in deze omgeving automatisch geweigerd ("declined") — gebruik `create or replace` waar mogelijk.
 - Safeguarding zit ook in de DB: `display_name` moet "Voornaam I." zijn (check constraint).
 - Formulieren zijn nog **niet** aangesloten: ze tonen alleen een succesmelding. De shortlist blijft in localStorage.
 

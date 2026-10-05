@@ -1,5 +1,6 @@
 /* FCG content model — the data itself lives in Supabase (see lib/site-data.ts).
    All talent profiles are fictional. Safeguarding by design: first name + initial only, no photos. */
+import type { ReelClip } from './replay';
 
 export type Loc = { en: string; nl: string };
 export type Region = { name: Loc; place: string; ll: [number, number]; iso: string[]; since: number; scouts: number; note: Loc };
@@ -11,6 +12,8 @@ export type Talent = {
   region: string; city: string; status: number; joined: string; trialCity?: string;
   a: number[]; st: { m: number; g?: number; as?: number; cs?: number; sv?: number }; traits: string[];
   bio: Loc; quote: Loc; ovr: number; group: GroupKey;
+  /** hand-drawn tactical replay moments (admin portal); empty = automatic moments for the position */
+  clips: ReelClip[];
 };
 export type Tier = { key: string; name: string; price: number | null; featured: boolean };
 export type ImpactItem = { k: string; cost: number };

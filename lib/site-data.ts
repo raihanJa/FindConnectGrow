@@ -1,6 +1,7 @@
 /* Server-side loader: reads all public content from Supabase and maps it onto the shapes the pages use. */
 import { cache } from 'react';
 import type { GroupKey, Loc, PosKey, SiteData, Talent } from './data';
+import type { ReelClip, Team, Track } from './replay';
 import { supabase } from './supabase';
 
 /** Pages are statically rendered and refreshed from Supabase at most every 5 minutes (ISR). */
@@ -13,7 +14,7 @@ function must<T>(r: { data: T | null; error: { message: string } | null }, what:
 }
 
 export const loadSiteData = cache(async (): Promise<SiteData> => {
-  const [regions, locations, groups, positions, statuses, attrs, traits, talents, tiers, impact, alloc, team, metrics] = await Promise.all([
+  const [regions, locations, groups, positions, statuses, attrs, traits, talents, clips, tiers, impact, alloc, team, metrics] = await Promise.all([
     supabase.from('regions').select('*').order('sort'),
     supabase.from('locations').select('*').order('sort'),
     supabase.from('position_groups').select('*').order('sort'),
@@ -22,6 +23,7 @@ export const loadSiteData = cache(async (): Promise<SiteData> => {
     supabase.from('attributes').select('*').order('idx'),
     supabase.from('traits').select('*'),
     supabase.from('talents_public').select('*').order('sort'),
+    supabase.from('talent_clips').select('*').order('talent_id').order('sort'),
     supabase.from('partnership_tiers').select('*').order('sort'),
     supabase.from('donation_impact_items').select('*').order('sort'),
     supabase.from('fund_allocation').select('*').order('sort'),
@@ -32,6 +34,17 @@ export const loadSiteData = cache(async (): Promise<SiteData> => {
   const places = must(locations, 'locations').map((l) => ({ key: l.key, name: l.name, ll: [l.lng, l.lat] as [number, number], kind: l.kind }));
   const hub = places.find((p) => p.kind === 'hub');
   if (!hub) throw new Error('Supabase: no hub location');
+
+  const clipsBy = new Map<string, ReelClip[]>();
+  for (const c of must(clips, 'replay clips')) {
+    const ents = c.ents as { team: Team; track: Track }[], ev = c.events as { t: number; en: string; nl: string }[];
+    const clip: ReelClip = {
+      dur: Number(c.duration), title: L(c, 'title'), match: L(c, 'match'), min: c.minute, mirror: false,
+      ...(c.flash_kind && c.flash_at != null ? { flash: [c.flash_at, c.flash_kind] as [number, string] } : {}),
+      ents: ents.map((e) => [e.team, e.track]), ball: c.ball as Track, ev: ev.map((e) => [e.t, { en: e.en, nl: e.nl }])
+    };
+    clipsBy.set(c.talent_id, [...(clipsBy.get(c.talent_id) ?? []), clip]);
+  }
 
   return {
     REGIONS: Object.fromEntries(must(regions, 'regions').map((r) => [r.key, {
@@ -53,7 +66,7 @@ export const loadSiteData = cache(async (): Promise<SiteData> => {
       return {
         id: t.id!, name: t.name!, g: t.g as Talent['g'], age: t.age!, pos: t.pos as PosKey, foot: t.foot as Talent['foot'], h: t.h!, no: t.no!,
         region: t.region!, city: t.city!, status: t.status!, joined: t.joined!, ...(t.trial_city ? { trialCity: t.trial_city } : {}),
-        a: t.a!, st, traits: t.traits ?? [], bio: L(t, 'bio'), quote: L(t, 'quote'), ovr: t.ovr!, group: t.group as GroupKey
+        a: t.a!, st, traits: t.traits ?? [], bio: L(t, 'bio'), quote: L(t, 'quote'), ovr: t.ovr!, group: t.group as GroupKey, clips: clipsBy.get(t.id!) ?? []
       };
     }),
     TIERS: must(tiers, 'partnership tiers').map((t) => ({ key: t.key, name: t.name, price: t.price_eur, featured: t.featured })),

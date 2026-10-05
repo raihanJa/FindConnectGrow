@@ -1,0 +1,2 @@
+insert into public.regions (key, name_en, name_nl, place, lng, lat, iso_codes, active_since, scouts, note_en, note_nl, sort) values
+  ('kurdistan', 'Kurdistan', 'Koerdistan', 'Erbil · Duhok · Sulaymaniyah', 44.0, 36.6, array['368','364','792']::text[], 2026, 2, 'A Kurdish-majority region spread across Iraq, Iran, Turkey and Syria. We are building a scouting network with community coaches and school leagues.', 'Een regio met een Koerdische meerderheid, verspreid over Irak, Iran, Turkije en Syrië. We bouwen een scoutingnetwerk op met buurttrainers en schoolcompetities.', 11);
