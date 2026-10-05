@@ -1,8 +1,19 @@
 /* FCG concept data — all talent profiles are fictional.
    Safeguarding by design: first name + initial only, no photos. */
 
-window.FCG_DATA = (function () {
-  const REGIONS = {
+export type Loc = { en: string; nl: string };
+export type Region = { name: Loc; place: string; ll: [number, number]; iso: string[]; since: number; scouts: number; note: Loc };
+export type PosKey = 'GK' | 'CB' | 'FB' | 'DM' | 'CM' | 'AM' | 'W' | 'ST';
+export type GroupKey = 'gk' | 'def' | 'mid' | 'att';
+export type Talent = {
+  id: string; name: string; g: 'm' | 'f'; age: number; pos: PosKey; foot: 'L' | 'R' | 'B'; h: number; no: number;
+  region: string; city: string; status: number; joined: string; trialCity?: string;
+  a: number[]; st: { m: number; g?: number; as?: number; cs?: number; sv?: number }; traits: string[];
+  bio: Loc; quote: Loc; ovr: number; group: GroupKey;
+};
+
+const DATA = (function () {
+  const REGIONS: Record<string, Region> = {
     ukraine: {
       name: { en: 'Ukraine', nl: 'Oekraïne' }, place: 'Kharkiv · Dnipro · Zaporizhzhia',
       ll: [35.5, 48.8], iso: ['804'], since: 2025, scouts: 6,
@@ -67,7 +78,7 @@ window.FCG_DATA = (function () {
     { name: 'Lyon', ll: [4.83, 45.76] }, { name: 'Kopenhagen', ll: [12.57, 55.68] }
   ];
 
-  const POS = {
+  const POS: Record<PosKey, Loc & { g: GroupKey }> = {
     GK: { en: 'Goalkeeper', nl: 'Keeper', g: 'gk' },
     CB: { en: 'Centre-back', nl: 'Centrale verdediger', g: 'def' },
     FB: { en: 'Full-back', nl: 'Back', g: 'def' },
@@ -77,7 +88,7 @@ window.FCG_DATA = (function () {
     W:  { en: 'Winger', nl: 'Vleugelspeler', g: 'att' },
     ST: { en: 'Striker', nl: 'Spits', g: 'att' }
   };
-  const GROUPS = {
+  const GROUPS: Record<GroupKey, Loc> = {
     gk: { en: 'Goalkeepers', nl: 'Keepers' },
     def: { en: 'Defenders', nl: 'Verdedigers' },
     mid: { en: 'Midfielders', nl: 'Middenvelders' },
@@ -97,7 +108,7 @@ window.FCG_DATA = (function () {
     { en: 'Work rate', nl: 'Werklust' },
     { en: 'Composure', nl: 'Rust' }
   ];
-  const TRAITS = {
+  const TRAITS: Record<string, Loc> = {
     vision: { en: 'Vision', nl: 'Spelinzicht' }, set: { en: 'Set pieces', nl: 'Standaardsituaties' },
     dribble: { en: '1v1 dribbling', nl: '1-tegen-1 dribbel' }, leader: { en: 'Leadership', nl: 'Leiderschap' },
     aerial: { en: 'Aerial duels', nl: 'Kopduels' }, calm: { en: 'Composure on the ball', nl: 'Rust aan de bal' },
@@ -107,8 +118,8 @@ window.FCG_DATA = (function () {
     weakfoot: { en: 'Two-footed', nl: 'Tweebenig' }
   };
 
-  const T = (o) => o; // marker for readability
-  const TALENTS = [
+  const T = (o: Loc) => o; // marker for readability
+  const TALENTS = ([
     { id: 'omar-h', name: 'Omar H.', g: 'm', age: 17, pos: 'AM', foot: 'L', h: 174, no: 10, region: 'syria', city: 'Aleppo', status: 2, joined: '2025-03', trialCity: 'Utrecht',
       a: [78, 86, 88, 62, 74, 80], st: { m: 24, g: 9, as: 14 }, traits: ['vision', 'set', 'dribble'],
       bio: T({ en: 'Learned the game on a concrete square between apartment blocks in Aleppo. Plays between the lines and sees passes nobody else does.', nl: 'Leerde voetballen op een betonnen pleintje tussen flatgebouwen in Aleppo. Speelt tussen de linies en ziet passes die niemand anders ziet.' }),
@@ -189,15 +200,19 @@ window.FCG_DATA = (function () {
       a: [70, 70, 72, 80, 82, 80], st: { m: 10, g: 1, as: 0 }, traits: ['aerial', 'leader', 'tackle'],
       bio: T({ en: 'Plays in a girls’ team set up by displaced teachers in Kassala. Strong in the air and the team’s natural captain.', nl: 'Speelt in een meidenteam dat door ontheemde leraren in Kassala is opgezet. Sterk in de lucht en de natuurlijke aanvoerder van het team.' }),
       quote: T({ en: 'Reads the game well and organises loudly. Exactly the profile women’s academies are looking for.', nl: 'Leest het spel goed en coacht luid. Precies het profiel waar vrouwenacademies naar zoeken.' }) }
-  ];
+  ] as Omit<Talent, 'ovr' | 'group'>[]) as Talent[];
 
   TALENTS.forEach((t) => {
-    const w = { GK: [0, .1, .2, .25, .15, .3], CB: [.12, .1, .13, .25, .2, .2], FB: [.25, .15, .1, .15, .25, .1],
+    const w: Record<PosKey, number[]> = { GK: [0, .1, .2, .25, .15, .3], CB: [.12, .1, .13, .25, .2, .2], FB: [.25, .15, .1, .15, .25, .1],
       DM: [.08, .2, .22, .18, .17, .15], CM: [.12, .22, .25, .1, .18, .13], AM: [.15, .3, .28, .05, .1, .12],
-      W: [.3, .28, .15, .05, .12, .1], ST: [.22, .22, .1, .16, .1, .2] }[t.pos];
-    t.ovr = Math.round(t.a.reduce((s, v, i) => s + v * w[i], 0));
+      W: [.3, .28, .15, .05, .12, .1], ST: [.22, .22, .1, .16, .1, .2] };
+    const wt = w[t.pos];
+    t.ovr = Math.round(t.a.reduce((s, v, i) => s + v * wt[i], 0));
     t.group = POS[t.pos].g;
   });
 
   return { REGIONS, HUB, ACADEMIES, POS, GROUPS, STATUS, ATTR, TRAITS, TALENTS };
 })();
+
+export const { REGIONS, HUB, ACADEMIES, POS, GROUPS, STATUS, ATTR, TRAITS, TALENTS } = DATA;
+export const byId = (id: string) => TALENTS.find((t) => t.id === id);

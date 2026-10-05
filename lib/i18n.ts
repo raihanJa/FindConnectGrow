@@ -1,8 +1,8 @@
 /* FCG translations.
-   FCG_NL  — Dutch versions of static HTML marked with data-i18n (English lives in the HTML).
-   FCG_TX  — strings used by JavaScript-rendered UI, in both languages. */
+   NL — Dutch versions of static markup (English lives inline in the components).
+   TX — strings used by dynamically rendered UI, in both languages. */
 
-window.FCG_NL = {
+export const NL: Record<string, string> = {
   /* titles */
   'title.home': 'FCG — Find Connect & Grow', 'title.talents': 'Talentenportaal — FCG', 'title.clubs': 'Voor clubs — FCG',
   'title.about': 'Missie — FCG', 'title.support': 'Steun ons — FCG',
@@ -157,7 +157,7 @@ window.FCG_NL = {
   'a.fsend': 'Verstuur voordracht'
 };
 
-window.FCG_TX = {
+export const TX: Record<string, { en: string; nl: string }> = {
   /* shared */
   'yrs': { en: 'yrs', nl: 'jr' },
   'foot.L': { en: 'Left', nl: 'Links' }, 'foot.R': { en: 'Right', nl: 'Rechts' }, 'foot.B': { en: 'Both', nl: 'Beide' },
