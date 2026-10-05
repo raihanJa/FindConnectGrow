@@ -1,0 +1,95 @@
+# CLAUDE.md
+
+## Over het project
+
+**FCG — Find Connect & Grow** is een (concept)website voor een stichting die voetbaltalenten uit oorlogs- en conflictgebieden een eerlijke kans geeft om door te breken bij clubs in Europa. Slogan: *"Talent has no borders. Opportunity does."* / *"Talent beyond borders"*.
+
+### Missie
+- **Scouten waar niemand scout**: FCG gaat naar gebieden waar talenten weinig kansen hebben (oorlogsgebieden, vluchtelingenkampen) en traint daar lokale scouts (trainers, leraren, ngo-medewerkers).
+- **Asielzoekerscentra in Europa**: FCG wil ook in Europese asielzoekerscentra (azc's) scouten en die talenten gelijke kansen geven. ⚠️ Dit onderdeel staat nog **niet** op de website — de huidige content gaat alleen over scouting in de herkomstregio's.
+- **Verbinden met profclubs**: geverifieerde talenten worden via een talentenportaal aan partnerclubs/academies gekoppeld.
+- **Begeleiden tot ze gesetteld zijn**: onderwijs, taal, welzijn — niet alleen tot de handtekening.
+
+### Het traject (4 stappen)
+1. **Find** (0–3 mnd) — lokaal scoutnetwerk, kamp- en straatcompetities, beelden op afstand.
+2. **Verify** (1–2 mnd) — 2 onafhankelijke analisten, leeftijds-/identiteitsverificatie, schriftelijke toestemming ouders/voogd.
+3. **Connect** (2–6 mnd) — profiel live in het portaal, clubs vragen dossier op, begeleide stage in Europa (visum/reis door FCG).
+4. **Grow** (doorlopend) — onderwijs, taallessen, mentale steun, welzijnsfunctionaris, contact met familie.
+
+### Kernprincipes (belangrijk bij nieuwe content)
+- De speler gaat altijd voor; families betalen **nooit** iets.
+- *Proof over promises*: nooit spelers overhypen of contracten beloven.
+- Lokale scouts, eerlijk betaald.
+- **Safeguarding by design**: veel spelers zijn minderjarig in onveilige situaties. Daarom op de publieke site:
+  - **Geen foto's** — elk profiel krijgt een gegenereerde "signature" (contourportret) i.p.v. een foto.
+  - **Alleen voornaam + initiaal** (bijv. "Omar H."), geen exacte locaties.
+  - Publieke highlights zijn geanimeerde tactische reconstructies, geen echte beelden.
+  - Volledige identiteit alleen voor geverifieerde clubs onder NDA na toestemming voogd.
+- Compliance: FIFA RSTP Artikel 19 (geen internationale transfers onder 18 buiten de uitzonderingen), solidariteitsbijdrage van toekomstige transfers terug naar de thuisgemeenschap.
+
+Houd je bij nieuwe features/content altijd aan deze safeguarding-regels.
+
+### Status
+Het is een **conceptwebsite**: alle talentprofielen, cijfers, teamleden, prijzen en het contactadres (`hello@fcg.example`) zijn fictief. Formulieren (dossieraanvraag, voordracht, partnerschap, nieuwsbrief, donatie) versturen niets — ze tonen alleen een succesmelding/toast. Er worden geen echte betalingen verwerkt. HQ (fictief): Amsterdam, opgericht 2025.
+
+## Pagina's
+
+| Route | Component | Inhoud |
+|---|---|---|
+| `/` | `HomePage` | Hero met "Spotlight of the week", statistiek (1 op 6 kinderen groeit op in conflictgebied), het 4-stappen traject, interactieve wereldkaart (d3-geo) met scoutingregio's → hub Amsterdam → partneracademies, nieuwste talenten, kerncijfers, "Get involved" |
+| `/talents` | `TalentsPage` | **Talentenportaal**: zoeken, filters (positie, leeftijd 14–21, regio, squad m/v, voorkeursbeen, status), sorteren, shortlist (ster), vergelijken (radarchart) en dossier aanvragen. Filters worden gespiegeld in de URL (`?q=&pos=&region=&squad=&status=`) |
+| `/talent/[id]` | `ProfilePage` | Spelersprofiel: signature, OVR, attributen-radar, stats, heatmap, mini-veld met positie, bio, scoutquote, tijdlijn in het traject, geanimeerde "tactical replay" (canvas/SVG reel), dossier aanvragen, delen. Statisch gegenereerd via `generateStaticParams` |
+| `/talent` | — | Redirect naar het eerste talent |
+| `/clubs` | `ClubsPage` | Voor clubs: waarom FCG, procesaccordeon, compliance & safeguarding, partnerschappen (**Scout Access** €1.9k/seizoen, **Academy Partner** €7.5k/seizoen, **Founding Partner** op aanvraag), jouw shortlist (`#shortlist`), FAQ |
+| `/about` | `AboutPage` | Missie: manifest/verhaal, 4 principes, safeguarding-charter (`#safeguarding`), team (placeholder-rollen), roadmap, talent voordragen (`#nominate`) |
+| `/support` | `SupportPage` | Doneren (`#give`): eenmalig/maandelijks, bestemming, verdeling (62% programma's, 18% traject, 12% safeguarding & onderwijs, 8% operatie); andere manieren van helpen (coachen op afstand, materiaal, expertise, sponsoring) |
+
+Oude statische URL's (`/talents.html`, `/talent.html?id=…`, etc.) worden geredirect in [next.config.ts](next.config.ts).
+
+## Data
+
+Alle content staat in [lib/data.ts](lib/data.ts) (geen database/CMS):
+- **11 regio's** (`REGIONS`): Oekraïne, Syrië, Gaza, Jemen, Soedan, Zuid-Soedan, Kamp Kakuma (Kenia), DR Congo, Afghanistan, Somalië, Sahel (Burkina Faso/Mali). Elk met coördinaten, ISO-codes voor de kaart, startjaar, aantal scouts en een toelichting.
+- **Hub** Amsterdam + **partneracademies**: Utrecht, Antwerpen, Düsseldorf, Porto, Lyon, Kopenhagen.
+- **20 fictieve talenten** (`TALENTS`), m/v, 15–19 jaar. Velden: `a` = 6 attributen (Pace, Technique, Vision, Physical, Work rate, Composure), `st` = stats, `status` = index in `STATUS` (0 Scouted, 1 Verified, 2 EU trial, 3 Partner academy). `ovr` en `group` worden berekend (gewogen naar positie) — niet handmatig invullen.
+- Teksten zijn `Loc` objecten: `{ en, nl }`.
+
+## Tech stack
+
+- **Next.js 16 (App Router)**, React 19, TypeScript (strict). Geen Tailwind, geen UI-library, geen tests/linter geconfigureerd.
+- `d3-geo` + `topojson-client` + `world-atlas` voor de kaart op de homepage.
+- Fonts via Google Fonts: Archivo (display), Newsreader (serif), JetBrains Mono.
+- Path alias `@/*` → projectroot.
+
+### Commando's
+```
+npm run dev     # dev server
+npm run build   # productie build (doet ook de typecheck)
+npm start
+```
+
+### Structuur
+- `app/` — dunne route-bestanden die alleen een pagina-component renderen (+ metadata/params).
+- `components/pages/*` — de echte pagina's, allemaal `'use client'`.
+- [components/providers.tsx](components/providers.tsx) — contexts: taal (`useLang`), toast (`useToast`), shortlist (`useShortlist`, `useStarToggle`), modal (`useModal`), `DocTitle`, `store` (localStorage met prefix `fcg:`).
+- [components/Chrome.tsx](components/Chrome.tsx) — header (masthead, nav, taalswitch, shortlistteller, mobiel menu) en footer (nieuwsbrief).
+- [components/ui.tsx](components/ui.tsx) — gedeelde UI: `T`, `Signature`, `PitchMini`, `Radar`, `StatusPill`, `StarButton`, `TalentCard`, `DossierForm`, `FormSuccess`, `useReveal` (scroll-fade-in + `data-count` tellers).
+- [lib/fcg.ts](lib/fcg.ts) — pure helpers: vertaling (`loc`, `tx`, `sx`), seeded random (`hash`, `rng`), SVG-generators (`signaturePaths`, `pitchMiniInner`, `radarInner`).
+- [lib/i18n.ts](lib/i18n.ts) — vertalingen.
+- [app/globals.css](app/globals.css) — één groot handgeschreven CSS-bestand ("editorial design system") met CSS-variabelen: papier `--paper #F3F0E8`, inkt `--ink #0C1C36`, accent `--blue #1463F3`, donker `--night #0A1730`.
+- `public/assets/` — FCG-logo's.
+
+## Conventies
+
+### Tweetaligheid (EN/NL) — altijd beide talen bijwerken
+- Taal komt uit `?lang=nl|en` of localStorage, default `en`.
+- **Statische tekst**: Engels inline via `<T k="sleutel" en="English text" />`; de Nederlandse versie hoort in het `NL` dictionary in `lib/i18n.ts` onder dezelfde sleutel. `T` rendert via `dangerouslySetInnerHTML`, dus kleine HTML (`<b>`, `<span class="it blue">`) mag in de strings.
+- **Dynamische tekst**: `t('sleutel')` met beide talen in het `TX` dictionary.
+- **Data**: `L(obj)` op een `{ en, nl }` object.
+- Sleutels per pagina geprefixt: `h.` home, `p.` portaal, `pr.` profiel, `c.` clubs, `a.` about, `s.` support, `foot.`/`nav.`/`mast.` chrome.
+
+### Overig
+- Code-stijl: compact, veel one-liners, korte variabelenamen — volg de bestaande stijl.
+- Graphics (signatures, radar, veldjes, heatmap) worden als SVG-strings gegenereerd en via `dangerouslySetInnerHTML` ingevoegd; deterministisch op basis van talent-id.
+- Respecteer `prefers-reduced-motion` (`reducedMotion()`) bij animaties.
+- Shortlist leeft alleen in localStorage van de bezoeker.
