@@ -2,16 +2,16 @@
 /* About page: scroll-lit manifesto, team, nomination form */
 import Link from 'next/link';
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { POS, type PosKey } from '@/lib/data';
+import type { PosKey } from '@/lib/data';
 import { reducedMotion } from '@/lib/fcg';
-import { DocTitle, useLang } from '../providers';
+import { DocTitle, useData, useLang } from '../providers';
 import { Signature, T, useReveal } from '../ui';
 
-const TEAM = [['FD', 'a.tm1'], ['HS', 'a.tm2'], ['WL', 'a.tm3'], ['PC', 'a.tm4'], ['DA', 'a.tm5']];
 const CHECK = <svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10" /></svg>;
 
 export default function AboutPage() {
   const { lang, t, L, s } = useLang();
+  const { POS, TEAM } = useData();
   useReveal([]);
   const manRef = useRef<HTMLParagraphElement>(null);
   const [sent, setSent] = useState(false);
@@ -112,9 +112,9 @@ export default function AboutPage() {
             <T className="concept-note" k="a.s4n" en="● Placeholder roles" />
           </div>
           <div className="team reveal" id="team">
-            {TEAM.map(([ini, k]) => (
-              <div className="member" key={ini}><div className="ph"><Signature id={'team-' + ini} rings={14} /><b>{ini}</b></div>
-                <h4>{t('a.tbd')}</h4><p>{t(k)}</p></div>
+            {TEAM.map((m) => (
+              <div className="member" key={m.initials}><div className="ph"><Signature id={'team-' + m.initials} rings={14} /><b>{m.initials}</b></div>
+                <h4>{t('a.tbd')}</h4><p>{L(m.role)}</p></div>
             ))}
           </div>
         </div>

@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
 import { createElement, useEffect, useState, type AllHTMLAttributes, type ElementType } from 'react';
-import { ATTR, POS, REGIONS, byId, type Talent } from '@/lib/data';
-import { pitchMiniInner, radarInner, signaturePaths, statusLabel, type RadarSet } from '@/lib/fcg';
-import { useLang, useModal, useShortlist, useStarToggle } from './providers';
+import type { Talent } from '@/lib/data';
+import { pitchMiniInner, radarInner, signaturePaths, type RadarSet } from '@/lib/fcg';
+import { useData, useLang, useModal, useShortlist, useStarToggle } from './providers';
 
 /* ---------- static, translatable markup (data-i18n equivalent) ---------- */
 type TProps = Omit<AllHTMLAttributes<HTMLElement>, 'as'> & { k: string; en: string; as?: ElementType };
@@ -24,14 +24,16 @@ export function PitchMini({ t }: { t: Talent }) {
   return <svg className="mini" viewBox="0 0 100 64" aria-hidden="true" dangerouslySetInnerHTML={{ __html: pitchMiniInner(t) }} />;
 }
 export function Radar({ sets, size, values }: { sets: RadarSet[]; size?: number; values?: boolean }) {
-  const { lang, t } = useLang();
+  const { t, L } = useLang();
+  const { ATTR } = useData();
   const S = size || 320;
-  return <svg className="radar" viewBox={`0 0 ${S} ${S}`} role="img" aria-label={t('radar.aria')} dangerouslySetInnerHTML={{ __html: radarInner(lang, sets, { size, values }) }} />;
+  return <svg className="radar" viewBox={`0 0 ${S} ${S}`} role="img" aria-label={t('radar.aria')} dangerouslySetInnerHTML={{ __html: radarInner(ATTR.map(L), sets, { size, values }) }} />;
 }
 
 export function StatusPill({ s }: { s: number }) {
-  const { lang } = useLang();
-  return <span className={`pill st-${s}`}><i></i>{statusLabel(lang, s)}</span>;
+  const { L } = useLang();
+  const { STATUS } = useData();
+  return <span className={`pill st-${s}`}><i></i>{L(STATUS[s])}</span>;
 }
 
 /* ---------- shortlist star ---------- */
@@ -53,6 +55,7 @@ export function StarButton({ id, label = true }: { id: string; label?: boolean }
 /* ---------- talent card ---------- */
 export function TalentCard({ t, delay, compare, cmpOn, onCmp }: { t: Talent; delay?: number; compare?: boolean; cmpOn?: boolean; onCmp?: (id: string, checked: boolean) => void }) {
   const { L, t: tr, foot } = useLang();
+  const { ATTR, POS, REGIONS } = useData();
   const order = t.a.map((v, i) => [v, i]).sort((a, b) => b[0] - a[0]).slice(0, 3);
   return (
     <article className="tcard" data-id={t.id} style={delay != null ? { animationDelay: `${delay}s` } : undefined}>
@@ -88,6 +91,7 @@ export function FormSuccess({ title, text }: { title: string; text: string }) {
 /* Dossier request — used on profile, portal compare + clubs */
 export function DossierForm({ ids }: { ids: string[] }) {
   const { t } = useLang();
+  const { byId } = useData();
   const [sent, setSent] = useState(false);
   const names = ids.map((id) => byId(id)).filter(Boolean).map((x) => x!.name);
   if (sent) return <FormSuccess title={t('dos.ok.t')} text={t('dos.ok.p')} />;

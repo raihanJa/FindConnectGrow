@@ -2,9 +2,9 @@
 /* Talent profile page + tactical replay player */
 import Link from 'next/link';
 import { useEffect, useMemo, useRef } from 'react';
-import { ATTR, GROUPS, POS, REGIONS, STATUS, TALENTS, TRAITS, byId, type Loc, type PosKey, type Talent } from '@/lib/data';
+import type { Loc, PosKey, Talent } from '@/lib/data';
 import { hash, loc, month, posXY, reducedMotion, rng, tx } from '@/lib/fcg';
-import { DocTitle, useLang, useModal, useToast } from '../providers';
+import { DocTitle, useData, useLang, useModal, useToast } from '../providers';
 import { DossierForm, Radar, Signature, StarButton, StatusPill, TalentCard, useReveal } from '../ui';
 
 /* ---------- Clip templates (pitch 105 × 68, attacking → right) ---------- */
@@ -225,6 +225,7 @@ function Reel({ t, clips }: { t: Talent; clips: ReelClip[] }) {
 
 /* ---------- Page ---------- */
 export default function ProfilePage({ id }: { id: string }) {
+  const { ATTR, GROUPS, POS, REGIONS, STATUS, TALENTS, TRAITS, byId } = useData();
   const t = byId(id);
   const { lang, t: tr, L, foot } = useLang();
   const modal = useModal(), toast = useToast();

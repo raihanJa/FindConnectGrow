@@ -2,14 +2,9 @@
 /* Support page: impact calculator + donation flow */
 import Link from 'next/link';
 import { useState } from 'react';
-import { REGIONS } from '@/lib/data';
-import { DocTitle, useLang, useModal } from '../providers';
+import { DocTitle, useData, useLang, useModal } from '../providers';
 import { FormSuccess, T, useReveal } from '../ui';
 
-const ITEMS = [
-  { k: 'train', cost: 15 }, { k: 'boots', cost: 40 }, { k: 'docs', cost: 120 }, { k: 'kit', cost: 220 }, { k: 'trial', cost: 650 }
-];
-const ALLOC: [string, number][] = [['al1', 62], ['al2', 18], ['al3', 12], ['al4', 8]];
 const COLORS = ['var(--ink)', 'var(--blue)', '#6E9CF7', 'var(--paper-2)'];
 type Gift = { amt: number; freq: string; dest: string };
 
@@ -21,6 +16,7 @@ function useFmt() {
 /* donation flow (concept) */
 function DonationFlow({ amt, freq, dest }: Gift) {
   const { t, L } = useLang();
+  const { REGIONS } = useData();
   const fmt = useFmt();
   const [n, setN] = useState(1);
   const destName = dest === 'need' ? t('s.need') : L(REGIONS[dest].name);
@@ -61,6 +57,7 @@ function HelpForm({ k }: { k: string }) {
 
 export default function SupportPage() {
   const { t, L } = useLang();
+  const { REGIONS, IMPACT, ALLOC } = useData();
   const modal = useModal();
   const fmt = useFmt();
   useReveal([]);
@@ -123,15 +120,15 @@ export default function SupportPage() {
               <p className="kicker" id="outK"><b>●</b> {freq === 'month' ? t('s.outk.m').replace('{y}', fmt(yearly)) : t('s.outk.o')}</p>
               <h2 className="h3 mt-s" id="outT" style={{ fontSize: 'clamp(1.5rem,2.6vw,2.2rem)' }}>{t('s.outt')}</h2>
               <div className="impact-list" id="impact">
-                {ITEMS.map((it) => {
+                {IMPACT.map((it) => {
                   const n = yearly / it.cost;
                   const val = n >= 1 ? Math.floor(n) : Math.round(n * 100) + '%';
                   return <div key={it.k} className={'impact' + (n < 0.05 ? ' zero' : '')}><b>{val}</b><span><strong>{t('s.i.' + it.k + (n < 2 ? '1' : ''))}</strong>{t('s.i.' + it.k + 'p').replace('{c}', fmt(it.cost))}</span></div>;
                 })}
               </div>
               <T as="p" className="kicker" k="s.alk" en="How every euro is split" />
-              <div className="alloc" id="alloc">{ALLOC.map(([k, v]) => <div key={k} style={{ flex: v }} title={t('s.' + k)}>{v}%</div>)}</div>
-              <div className="alloc-leg" id="allocLeg">{ALLOC.map(([k, v], i) => <div key={k}><b>{v}%</b><span><i style={{ background: COLORS[i] }}></i>{t('s.' + k)}</span></div>)}</div>
+              <div className="alloc" id="alloc">{ALLOC.map((a) => <div key={a.key} style={{ flex: a.pct }} title={L(a.label)}>{a.pct}%</div>)}</div>
+              <div className="alloc-leg" id="allocLeg">{ALLOC.map((a, i) => <div key={a.key}><b>{a.pct}%</b><span><i style={{ background: COLORS[i % COLORS.length] }}></i>{L(a.label)}</span></div>)}</div>
             </div>
           </div>
         </div>

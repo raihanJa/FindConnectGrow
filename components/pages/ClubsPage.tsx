@@ -2,12 +2,13 @@
 /* Clubs page: process accordion, shortlist, partnership form */
 import Link from 'next/link';
 import { useState } from 'react';
-import { GROUPS, POS, REGIONS, byId } from '@/lib/data';
-import { DocTitle, useLang, useModal, useShortlist, useStarToggle, useToast } from '../providers';
+import type { Tier } from '@/lib/data';
+import { DocTitle, useData, useLang, useModal, useShortlist, useStarToggle, useToast } from '../providers';
 import { DossierForm, FormSuccess, Signature, StatusPill, T, useReveal } from '../ui';
 
 function PartnerForm({ tier }: { tier: string }) {
   const { t, L } = useLang();
+  const { GROUPS } = useData();
   const [sent, setSent] = useState(false);
   if (sent) return <FormSuccess title={t('c.f.ok.t')} text={t('c.f.ok.p')} />;
   return (
@@ -36,9 +37,16 @@ const PROC: [string, string, string, string, string, string, string][] = [
   ['05', 'c.p5t', 'Integration &amp; aftercare', 'c.p5d', '12+ months', 'c.p5p', 'After signing we stay involved: language and school, housing, mental-health support and regular check-ins with family back home.']
 ];
 const CHECK = <svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10" /></svg>;
+/* €1900 → "€1.9k"; no price = on request */
+const Price = ({ tier }: { tier?: Tier }) => (
+  <div className="price">{tier?.price ? <><b>{`€${+(tier.price / 1000).toFixed(1)}k`}</b><T k="c.season" en="/ season" /></> : <T as="b" k="c.onreq" en="On request" />}</div>
+);
 
 export default function ClubsPage() {
   const { t, L } = useLang();
+  const { POS, REGIONS, TIERS, byId } = useData();
+  const tier = (k: string) => TIERS.find((x) => x.key === k);
+  const [scout, academy, founding] = [tier('scout_access'), tier('academy_partner'), tier('founding_partner')];
   const modal = useModal(), toast = useToast(), sl = useShortlist(), toggleStar = useStarToggle();
   useReveal([]);
   const [openProc, setOpenProc] = useState(0);
@@ -118,25 +126,25 @@ export default function ClubsPage() {
           <div className="tiers reveal">
             <div className="tier">
               <T as="p" className="kicker" k="c.t1k" en="For scouting departments" />
-              <h3 className="h3">Scout Access</h3>
-              <div className="price"><b>€1.9k</b><T k="c.season" en="/ season" /></div>
+              <h3 className="h3">{scout?.name}</h3>
+              <Price tier={scout} />
               <ul><T as="li" k="c.t1a" en="Full portal access to verified profiles" /><T as="li" k="c.t1b" en="Unlocked match footage" /><T as="li" k="c.t1c" en="Monthly curated shortlist" /><T as="li" k="c.t1d" en="2 dossier requests per month" /></ul>
-              <T as="button" className="btn btn--ghost" data-tier="Scout Access" k="c.apply" en="Apply" onClick={() => tierForm('Scout Access')} />
+              <T as="button" className="btn btn--ghost" data-tier={scout?.name} k="c.apply" en="Apply" onClick={() => tierForm(scout?.name ?? '')} />
             </div>
             <div className="tier feat">
               <T className="flag" k="c.pop" en="Most chosen" />
               <T as="p" className="kicker" style={{ color: '#8FB3FF' }} k="c.t2k" en="For academies" />
-              <h3 className="h3">Academy Partner</h3>
-              <div className="price"><b>€7.5k</b><T k="c.season" en="/ season" /></div>
+              <h3 className="h3">{academy?.name}</h3>
+              <Price tier={academy} />
               <ul><T as="li" k="c.t2a" en="Everything in Scout Access" /><T as="li" k="c.t2b" en="Unlimited dossier requests" /><T as="li" k="c.t2c" en="Priority trials hosted at your club" /><T as="li" k="c.t2d" en="FCG welfare officer on site" /><T as="li" k="c.t2e" en="Joint education &amp; language plan" /></ul>
-              <T as="button" className="btn btn--light" data-tier="Academy Partner" k="c.apply" en="Apply" onClick={() => tierForm('Academy Partner')} />
+              <T as="button" className="btn btn--light" data-tier={academy?.name} k="c.apply" en="Apply" onClick={() => tierForm(academy?.name ?? '')} />
             </div>
             <div className="tier">
               <T as="p" className="kicker" k="c.t3k" en="For clubs that want to lead" />
-              <h3 className="h3">Founding Partner</h3>
-              <div className="price"><T as="b" k="c.onreq" en="On request" /></div>
+              <h3 className="h3">{founding?.name}</h3>
+              <Price tier={founding} />
               <ul><T as="li" k="c.t3a" en="Co-fund a full scouting region" /><T as="li" k="c.t3b" en="First look at every new talent" /><T as="li" k="c.t3c" en="Named regional programme" /><T as="li" k="c.t3d" en="Seat on our advisory council" /></ul>
-              <T as="button" className="btn btn--ghost" data-tier="Founding Partner" k="c.talk" en="Let’s talk" onClick={() => tierForm('Founding Partner')} />
+              <T as="button" className="btn btn--ghost" data-tier={founding?.name} k="c.talk" en="Let’s talk" onClick={() => tierForm(founding?.name ?? '')} />
             </div>
           </div>
           <T as="p" className="footnote" k="c.tfoot" en="Concept pricing for illustration. All fees go to scouting, verification and player welfare." />

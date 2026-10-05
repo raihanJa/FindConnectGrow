@@ -48,11 +48,16 @@ Oude statische URL's (`/talents.html`, `/talent.html?id=…`, etc.) worden gered
 
 ## Data
 
-Alle content staat in [lib/data.ts](lib/data.ts) (geen database/CMS):
-- **11 regio's** (`REGIONS`): Oekraïne, Syrië, Gaza, Jemen, Soedan, Zuid-Soedan, Kamp Kakuma (Kenia), DR Congo, Afghanistan, Somalië, Sahel (Burkina Faso/Mali). Elk met coördinaten, ISO-codes voor de kaart, startjaar, aantal scouts en een toelichting.
-- **Hub** Amsterdam + **partneracademies**: Utrecht, Antwerpen, Düsseldorf, Porto, Lyon, Kopenhagen.
-- **20 fictieve talenten** (`TALENTS`), m/v, 15–19 jaar. Velden: `a` = 6 attributen (Pace, Technique, Vision, Physical, Work rate, Composure), `st` = stats, `status` = index in `STATUS` (0 Scouted, 1 Verified, 2 EU trial, 3 Partner academy). `ovr` en `group` worden berekend (gewogen naar positie) — niet handmatig invullen.
-- Teksten zijn `Loc` objecten: `{ en, nl }`.
+Alle content staat in **Supabase** (project `fcg-find-connect-grow`, ref `ersoactjwudfbpjqycav`, org *FindConnectandGrow*, eu-central-1). **Niet** het Dentavio-project (org Cartura) gebruiken.
+
+- **Hoe de site leest**: de root layout roept `loadSiteData()` aan ([lib/site-data.ts](lib/site-data.ts)) en geeft alles via `Providers` door; client-componenten pakken het met `useData()` (`TALENTS`, `REGIONS`, `POS`, `GROUPS`, `STATUS`, `ATTR`, `TRAITS`, `HUB`, `ACADEMIES`, `TIERS`, `IMPACT`, `ALLOC`, `TEAM`, `METRICS`, `byId`). Types staan in [lib/data.ts](lib/data.ts). Pagina's zijn statisch met ISR (`revalidate = 300`): een wijziging in Supabase staat binnen ~5 min live.
+- **Inhoud**: 11 regio's (`regions`), hub Amsterdam + 6 partneracademies (`locations`), 20 fictieve talenten (`talents` + `talent_traits`, volgorde via `sort`), posities met OVR-gewichten, statussen (0 Scouted, 1 Verified, 2 EU trial, 3 Partner academy), pakketten/prijzen, donatie-items, fondsverdeling, team, kerncijfers (`site_metrics`; regio's en scouts worden geteld uit `regions`).
+- Lees talenten altijd via de view `talents_public` — die berekent `ovr`/`group`; nooit handmatig invullen.
+- Tweetalige velden staan als `*_en`/`*_nl` kolommen en worden in de loader omgezet naar `Loc` (`{ en, nl }`). UI-teksten blijven in `lib/i18n.ts`.
+- Schema: [supabase/migrations/](supabase/migrations/), demodata: [supabase/seed.sql](supabase/seed.sql). Client: [lib/supabase.ts](lib/supabase.ts), types: [lib/database.types.ts](lib/database.types.ts) (bij schemawijziging opnieuw genereren), env in `.env.local` (zie `.env.example`).
+- **RLS**: content is publiek leesbaar, niet schrijfbaar. Formuliertabellen (`nominations`, `partnership_applications`, `help_offers`, `newsletter_subscribers`, `donations`) zijn **insert-only** voor bezoekers; dossieraanvragen via RPC `submit_dossier_request`. Nooit SELECT voor anon toevoegen: nominaties gaan over minderjarigen.
+- Safeguarding zit ook in de DB: `display_name` moet "Voornaam I." zijn (check constraint).
+- Formulieren zijn nog **niet** aangesloten: ze tonen alleen een succesmelding. De shortlist blijft in localStorage.
 
 ## Tech stack
 
@@ -71,10 +76,10 @@ npm start
 ### Structuur
 - `app/` — dunne route-bestanden die alleen een pagina-component renderen (+ metadata/params).
 - `components/pages/*` — de echte pagina's, allemaal `'use client'`.
-- [components/providers.tsx](components/providers.tsx) — contexts: taal (`useLang`), toast (`useToast`), shortlist (`useShortlist`, `useStarToggle`), modal (`useModal`), `DocTitle`, `store` (localStorage met prefix `fcg:`).
+- [components/providers.tsx](components/providers.tsx) — contexts: data (`useData`), taal (`useLang`), toast (`useToast`), shortlist (`useShortlist`, `useStarToggle`), modal (`useModal`), `DocTitle`, `store` (localStorage met prefix `fcg:`).
 - [components/Chrome.tsx](components/Chrome.tsx) — header (masthead, nav, taalswitch, shortlistteller, mobiel menu) en footer (nieuwsbrief).
 - [components/ui.tsx](components/ui.tsx) — gedeelde UI: `T`, `Signature`, `PitchMini`, `Radar`, `StatusPill`, `StarButton`, `TalentCard`, `DossierForm`, `FormSuccess`, `useReveal` (scroll-fade-in + `data-count` tellers).
-- [lib/fcg.ts](lib/fcg.ts) — pure helpers: vertaling (`loc`, `tx`, `sx`), seeded random (`hash`, `rng`), SVG-generators (`signaturePaths`, `pitchMiniInner`, `radarInner`).
+- [lib/fcg.ts](lib/fcg.ts) — pure helpers: vertaling (`loc`, `tx`, `sx`), seeded random (`hash`, `rng`), SVG-generators (`signaturePaths`, `pitchMiniInner`, `radarInner`). Geen data-imports: labels worden als parameter meegegeven.
 - [lib/i18n.ts](lib/i18n.ts) — vertalingen.
 - [app/globals.css](app/globals.css) — één groot handgeschreven CSS-bestand ("editorial design system") met CSS-variabelen: papier `--paper #F3F0E8`, inkt `--ink #0C1C36`, accent `--blue #1463F3`, donker `--night #0A1730`.
 - `public/assets/` — FCG-logo's.
@@ -85,7 +90,7 @@ npm start
 - Taal komt uit `?lang=nl|en` of localStorage, default `en`.
 - **Statische tekst**: Engels inline via `<T k="sleutel" en="English text" />`; de Nederlandse versie hoort in het `NL` dictionary in `lib/i18n.ts` onder dezelfde sleutel. `T` rendert via `dangerouslySetInnerHTML`, dus kleine HTML (`<b>`, `<span class="it blue">`) mag in de strings.
 - **Dynamische tekst**: `t('sleutel')` met beide talen in het `TX` dictionary.
-- **Data**: `L(obj)` op een `{ en, nl }` object.
+- **Data**: `L(obj)` op een `{ en, nl }` object (uit `useData()`).
 - Sleutels per pagina geprefixt: `h.` home, `p.` portaal, `pr.` profiel, `c.` clubs, `a.` about, `s.` support, `foot.`/`nav.`/`mast.` chrome.
 
 ### Overig

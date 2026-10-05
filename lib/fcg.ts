@@ -1,5 +1,5 @@
 /* FCG — pure helpers: translation lookup, seeded random, generative graphics (as SVG markup) */
-import { ATTR, STATUS, type Loc, type Talent } from './data';
+import type { Loc, Talent } from './data';
 import { NL, TX } from './i18n';
 
 export type Lang = 'en' | 'nl';
@@ -14,7 +14,6 @@ export const month = (lang: Lang, ym: string) => {
   const [y, m] = ym.split('-').map(Number);
   return new Date(y, m - 1, 1).toLocaleDateString(lang === 'nl' ? 'nl-NL' : 'en-GB', { month: 'short', year: 'numeric' });
 };
-export const statusLabel = (lang: Lang, s: number) => loc(lang, STATUS[s]);
 
 /* ---------- seeded random ---------- */
 export function hash(str: string) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -78,9 +77,8 @@ export function pitchMiniInner(t: Talent) {
 
 /* Radar chart */
 export type RadarSet = { values: number[]; color: string; fill?: number; dash?: boolean };
-export function radarInner(lang: Lang, sets: RadarSet[], opt: { size?: number; values?: boolean } = {}) {
+export function radarInner(labels: string[], sets: RadarSet[], opt: { size?: number; values?: boolean } = {}) {
   const S = opt.size || 320, c = S / 2, R = S * 0.34, n = 6;
-  const labels = ATTR.map((a) => loc(lang, a));
   const pt = (i: number, v: number) => { const a = -Math.PI / 2 + (i / n) * Math.PI * 2; return [c + Math.cos(a) * R * v, c + Math.sin(a) * R * v]; };
   let g = '';
   [0.25, 0.5, 0.75, 1].forEach((k) => { g += `<polygon class="ring" points="${[...Array(n)].map((_, i) => pt(i, k).join(',')).join(' ')}"/>`; });

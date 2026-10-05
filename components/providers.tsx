@@ -1,7 +1,7 @@
 'use client';
 /* FCG — shared runtime: i18n, shortlist, toast, modal */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { TALENTS, type Loc } from '@/lib/data';
+import type { Loc, SiteData, Talent } from '@/lib/data';
 import { loc, sx, tx, type Lang } from '@/lib/fcg';
 
 /* ---------- storage ---------- */
@@ -9,6 +9,16 @@ export const store = {
   get<T>(k: string, d: T): T { try { const v = localStorage.getItem('fcg:' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k: string, v: unknown) { try { localStorage.setItem('fcg:' + k, JSON.stringify(v)); } catch { /* private mode */ } }
 };
+
+/* ---------- site data (loaded from Supabase in the root layout) ---------- */
+type DataCtx = SiteData & { byId: (id: string) => Talent | undefined };
+const DataContext = createContext<DataCtx | null>(null);
+export const useData = () => useContext(DataContext)!;
+
+function DataProvider({ data, children }: { data: SiteData; children: ReactNode }) {
+  const value = useMemo(() => ({ ...data, byId: (id: string) => data.TALENTS.find((t) => t.id === id) }), [data]);
+  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
+}
 
 /* ---------- i18n ---------- */
 type LangCtx = {
@@ -78,18 +88,18 @@ function ToastProvider({ children }: { children: ReactNode }) {
 type ShortlistCtx = { list: string[]; has: (id: string) => boolean; toggle: (id: string) => boolean; clear: () => void; bump: number; bumpNow: () => void };
 const ShortlistContext = createContext<ShortlistCtx | null>(null);
 export const useShortlist = () => useContext(ShortlistContext)!;
-const validIds = (l: string[]) => l.filter((id) => TALENTS.some((t) => t.id === id));
-
 function ShortlistProvider({ children }: { children: ReactNode }) {
+  const { TALENTS } = useData();
+  const validIds = useCallback((l: string[]) => l.filter((id) => TALENTS.some((t) => t.id === id)), [TALENTS]);
   const [list, setList] = useState<string[]>([]);
   const [bump, setBump] = useState(0);
-  useEffect(() => { setList(validIds(store.get<string[]>('shortlist', []))); }, []);
+  useEffect(() => { setList(validIds(store.get<string[]>('shortlist', []))); }, [validIds]);
   const toggle = useCallback((id: string) => {
     const l = validIds(store.get<string[]>('shortlist', [])); const i = l.indexOf(id);
     if (i >= 0) l.splice(i, 1); else l.push(id);
     store.set('shortlist', l); setList(l);
     return i < 0;
-  }, []);
+  }, [validIds]);
   const clear = useCallback(() => { store.set('shortlist', []); setList([]); }, []);
   const bumpNow = useCallback(() => setBump((b) => b + 1), []);
   const value = useMemo(() => ({ list, has: (id: string) => list.includes(id), toggle, clear, bump, bumpNow }), [list, toggle, clear, bump, bumpNow]);
@@ -98,9 +108,9 @@ function ShortlistProvider({ children }: { children: ReactNode }) {
 
 /** Star toggle with toast + header bump — shared by every star / remove button. */
 export function useStarToggle() {
-  const sl = useShortlist(), toast = useToast(), { t } = useLang();
+  const sl = useShortlist(), toast = useToast(), { t } = useLang(), { byId } = useData();
   return (id: string) => {
-    const tal = TALENTS.find((x) => x.id === id)!;
+    const tal = byId(id)!;
     const on = sl.toggle(id);
     toast(on ? t('toast.sl.add').replace('{n}', tal.name) : t('toast.sl.rm').replace('{n}', tal.name));
     sl.bumpNow();
@@ -165,8 +175,9 @@ function ModalProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({ data, children }: { data: SiteData; children: ReactNode }) {
   return (
+    <DataProvider data={data}>
     <LangProvider>
       <ToastProvider>
         <ShortlistProvider>
@@ -174,5 +185,6 @@ export function Providers({ children }: { children: ReactNode }) {
         </ShortlistProvider>
       </ToastProvider>
     </LangProvider>
+    </DataProvider>
   );
 }

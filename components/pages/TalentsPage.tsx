@@ -2,8 +2,8 @@
 /* Talent portal: filters, sorting, shortlist, compare */
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { ATTR, GROUPS, POS, REGIONS, STATUS, TALENTS, byId, type GroupKey, type Talent } from '@/lib/data';
-import { store, DocTitle, useLang, useModal, useShortlist, useToast } from '../providers';
+import type { GroupKey, Talent } from '@/lib/data';
+import { store, DocTitle, useData, useLang, useModal, useShortlist, useToast } from '../providers';
 import { DossierForm, Radar, T, TalentCard } from '../ui';
 
 const COLORS = ['#1463F3', '#0C1C36', '#7FA6F5'];
@@ -12,6 +12,7 @@ type Initial = { q: string; pos: string; region: string; squad: string; status: 
 function CompareModal({ ids }: { ids: string[] }) {
   const { t, L, foot } = useLang();
   const modal = useModal(), sl = useShortlist(), toast = useToast();
+  const { ATTR, REGIONS, STATUS, byId } = useData();
   const ts = ids.map((id) => byId(id)!);
   const extra: [string, (x: Talent) => string | number][] = [
     [t('cmp.ovr'), (x) => x.ovr], [t('p.age'), (x) => x.age], [t('cmp.pos'), (x) => x.pos], [t('p.foot'), (x) => foot(x.foot)],
@@ -37,6 +38,7 @@ function CompareModal({ ids }: { ids: string[] }) {
 
 export default function TalentsPage({ initial }: { initial: Initial }) {
   const { lang, t, L, s, foot } = useLang();
+  const { GROUPS, POS, REGIONS, STATUS, TALENTS, byId } = useData();
   const modal = useModal(), toast = useToast();
 
   const [qInput, setQInput] = useState(initial.q);

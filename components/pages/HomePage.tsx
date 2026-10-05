@@ -2,14 +2,12 @@
 /* Home page */
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { ACADEMIES, HUB, POS, REGIONS, TALENTS, type Talent } from '@/lib/data';
-import { reducedMotion, statusLabel, tx } from '@/lib/fcg';
-import { DocTitle, useLang } from '../providers';
-import { Signature, T, TalentCard, useReveal } from '../ui';
+import type { Talent } from '@/lib/data';
+import { reducedMotion, tx } from '@/lib/fcg';
+import { DocTitle, useData, useLang } from '../providers';
+import { Signature, StatusPill, T, TalentCard, useReveal } from '../ui';
 
-const regionKeys = Object.keys(REGIONS);
 const PATH: [string, string, string][] = [['01', 'Find', 'Vinden'], ['02', 'Verify', 'Verifiëren'], ['03', 'Connect', 'Verbinden'], ['04', 'Grow', 'Groeien']];
-const countFor = (k: string) => TALENTS.filter((t) => t.region === k).length;
 
 type Pt = [number, number];
 function quad(p0: Pt, c: Pt, p1: Pt, s: number): Pt {
@@ -26,11 +24,12 @@ type MapData = {
 };
 
 function Spot({ id, t }: { id: string; t: Talent | null }) {
-  const { lang, L, t: tr } = useLang();
+  const { L, t: tr } = useLang();
+  const { POS, REGIONS } = useData();
   if (!t) return <a className="hero-spot" id={id} href="#"></a>;
   return (
     <Link className="hero-spot" id={id} href={`/talent/${t.id}`}>
-      <div className="sig"><Signature id={t.id} /></div><div><span className={`pill st-${t.status}`}><i></i>{statusLabel(lang, t.status)}</span>
+      <div className="sig"><Signature id={t.id} /></div><div><StatusPill s={t.status} />
         <h4>{t.name}</h4><p>{`${L(POS[t.pos])} · ${t.age} ${tr('yrs')}`}<br />{`${t.city}, ${L(REGIONS[t.region].name)}`}</p></div>
     </Link>
   );
@@ -38,6 +37,9 @@ function Spot({ id, t }: { id: string; t: Talent | null }) {
 
 export default function HomePage() {
   const { lang, ready, t, L } = useLang();
+  const { ACADEMIES, HUB, REGIONS, TALENTS, METRICS } = useData();
+  const regionKeys = Object.keys(REGIONS);
+  const countFor = (k: string) => TALENTS.filter((x) => x.region === k).length;
   useReveal([]);
   const langRef = useRef(lang);
   useEffect(() => { langRef.current = lang; }, [lang]);
@@ -134,7 +136,7 @@ export default function HomePage() {
   const ps = PATH[Math.max(0, cur)];
 
   /* ---------- Map ---------- */
-  const [selected, setSelected] = useState('syria');
+  const [selected, setSelected] = useState(() => (REGIONS.syria ? 'syria' : regionKeys[0]));
   const [map, setMap] = useState<MapData | null>(null);
   const [mapFail, setMapFail] = useState(false);
   const userTouched = useRef(false), autoTimer = useRef(0);
@@ -377,10 +379,11 @@ export default function HomePage() {
       <section className="sec">
         <div className="wrap">
           <div className="numbers reveal">
-            <div><b><span data-count="11">0</span></b><T k="h.n1" en="Regions active" /></div>
-            <div><b><span data-count="41">0</span></b><T k="h.n2" en="Trained local scouts" /></div>
-            <div><b><span data-count="140">0</span><sup>+</sup></b><T k="h.n3" en="Players in the pathway" /></div>
-            <div><b><span data-count="12">0</span></b><T k="h.n4" en="Partner academies" /></div>
+            <div><b><span data-count={regionKeys.length}>0</span></b><T k="h.n1" en="Regions active" /></div>
+            <div><b><span data-count={regionKeys.reduce((s, k) => s + REGIONS[k].scouts, 0)}>0</span></b><T k="h.n2" en="Trained local scouts" /></div>
+            {['players_in_pathway', 'partner_academies'].filter((k) => METRICS[k]).map((k) => (
+              <div key={k}><b><span data-count={METRICS[k].value}>0</span>{METRICS[k].suffix && <sup>{METRICS[k].suffix}</sup>}</b><span>{L(METRICS[k].label)}</span></div>
+            ))}
           </div>
           <T as="p" className="footnote" k="h.nfoot" en="Concept figures for illustration purposes." />
           <div className="pull reveal">
