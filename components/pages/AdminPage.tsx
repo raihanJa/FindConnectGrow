@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { revalidateSite } from '@/app/admin/actions';
 import type { PosKey, Talent } from '@/lib/data';
+import { autoHeat, type HeatSpot } from '@/lib/fcg';
 import { browserSupabase } from '@/lib/supabase-browser';
 import { DocTitle, useConfirm, useData, useLang, useToast } from '../providers';
+import { HeatEditor } from '../HeatEditor';
 import { clipComplete, ReplayEditor, toPayload, type DraftClip } from '../ReplayEditor';
 import { PitchMini, Radar, Signature, StatusPill, T } from '../ui';
 
@@ -31,7 +33,7 @@ async function refreshSite() {
 }
 
 type View = { v: 'list' | 'archive' | 'new' } | { v: 'edit'; id: string };
-type Edit = { id: string; archived: boolean; f: F; clips: DraftClip[] };
+type Edit = { id: string; archived: boolean; f: F; clips: DraftClip[]; heat: HeatSpot[] | null };
 const HEAD = {
   list: ['adm.h1.list', 'Manage <span class="it blue">talents.</span>'], archive: ['adm.h1.arch', 'The <span class="it blue">archive.</span>'],
   new: ['adm.h1', 'Add a <span class="it blue">talent.</span>'], edit: ['adm.h1.edit', 'Edit a <span class="it blue">talent.</span>']
@@ -194,6 +196,7 @@ function EditTalent({ id, onBack }: { id: string; onBack: (archived: boolean) =>
           a: [x.pace, x.technique, x.vision, x.physical, x.work_rate, x.composure], traits: (tt.data ?? []).map((r) => r.trait_key), centres: (tce.data ?? []).map((r) => r.centre_key),
           published: x.published, consent: false
         },
+        heat: Array.isArray(x.heat) ? x.heat as HeatSpot[] : null,
         clips: (tc.data ?? []).map((c): DraftClip => ({
           minute: String(c.minute), title_en: c.title_en, title_nl: c.title_nl, match_en: c.match_en, match_nl: c.match_nl, duration: Number(c.duration),
           flash_kind: c.flash_kind ?? '', flash_at: c.flash_at, ents: c.ents as DraftClip['ents'], ball: c.ball as DraftClip['ball'], events: c.events as DraftClip['events']
@@ -212,6 +215,7 @@ function TalentForm({ edit, onBack }: { edit?: Edit; onBack: () => void }) {
   const { POS, GROUPS, STATUS, ATTR, REGIONS, ACADEMIES, TRAITS, CENTRES } = useData();
   const [f, setF] = useState<F>(() => edit?.f ?? blank());
   const [clips, setClips] = useState<DraftClip[]>(() => edit?.clips ?? []);
+  const [heat, setHeat] = useState<HeatSpot[] | null>(() => edit?.heat ?? null);
   const [weights, setWeights] = useState<Record<string, number[]>>({});
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
@@ -232,6 +236,7 @@ function TalentForm({ edit, onBack }: { edit?: Edit; onBack: () => void }) {
   const w = weights[f.pos];
   const ovr = w ? Math.round(f.a.reduce((sum, v, i) => sum + v * w[i], 0)) : null;
   const preview = useMemo(() => ({ pos: f.pos, foot: f.foot }) as Talent, [f.pos, f.foot]);
+  const heatAuto = useMemo(() => autoHeat({ id: slug, pos: f.pos, foot: f.foot as Talent['foot'], group: POS[f.pos].g }), [slug, f.pos, f.foot, POS]);
 
   const toggleTrait = (k: string) => set({ traits: f.traits.includes(k) ? f.traits.filter((x) => x !== k) : f.traits.length < MAX_TRAITS ? [...f.traits, k] : f.traits });
 
@@ -254,6 +259,10 @@ function TalentForm({ edit, onBack }: { edit?: Edit; onBack: () => void }) {
     };
     const { data: id, error } = await sb.rpc(edit ? 'update_talent' : 'create_talent', { p, p_traits: f.traits });
     if (error || !id) { setBusy(false); setErr(error?.message || s('adm.fail', 'Saving failed.')); return; }
+    if (edit || heat?.length) { // empty = automatic zones
+      const { error: he } = await sb.rpc('set_talent_heat', { p_id: id, p_heat: heat?.length ? heat : null });
+      if (he) { setBusy(false); setErr(he.message); return; }
+    }
     const live = await refreshSite();
     setBusy(false); setDone({ id, name, published: f.published, live });
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -269,7 +278,7 @@ function TalentForm({ edit, onBack }: { edit?: Edit; onBack: () => void }) {
       <div className="adm-actions">
         {done.published && !archived && <Link className="btn btn--ghost" href={`/talent/${done.id}`}>{s('adm.ok.view', 'View profile')} <span className="arr">→</span></Link>}
         {edit ? <button className="btn btn--blue" onClick={onBack}>{s('adm.ok.back', 'Back to overview')}</button>
-          : <button className="btn btn--blue" onClick={() => { setF(blank()); setClips([]); setDone(null); }}>{s('adm.ok.again', 'Add another talent')}</button>}
+          : <button className="btn btn--blue" onClick={() => { setF(blank()); setClips([]); setHeat(null); setDone(null); }}>{s('adm.ok.again', 'Add another talent')}</button>}
       </div>
     </div>
   );
@@ -380,7 +389,12 @@ function TalentForm({ edit, onBack }: { edit?: Edit; onBack: () => void }) {
           <ReplayEditor clips={clips} setClips={setClips} no={f.no} />
         </fieldset>
 
-        <fieldset className="adm-sec"><legend className="kicker"><span className="num">09</span><T k="adm.s8" en="Publish" /></legend>
+        <fieldset className="adm-sec"><legend className="kicker"><span className="num">09</span><T k="adm.s10" en="Heatmap" /></legend>
+          <T as="p" className="muted adm-hint" k="adm.ht.intro" en="Where on the pitch the player is most active (attacking → right). Without your own zones, the profile shows automatic ones for the position." />
+          <HeatEditor spots={heat} setSpots={setHeat} auto={heatAuto} />
+        </fieldset>
+
+        <fieldset className="adm-sec"><legend className="kicker"><span className="num">10</span><T k="adm.s8" en="Publish" /></legend>
           <div className="seg adm-pub">
             <button type="button" aria-pressed={f.published} onClick={() => set({ published: true })}>{edit ? s('adm.pub.e', 'Published') : s('adm.pub', 'Publish now')}</button>
             <button type="button" aria-pressed={!f.published} onClick={() => set({ published: false })}>{edit ? s('adm.draft.e', 'Unpublished') : s('adm.draft', 'Save unpublished')}</button>

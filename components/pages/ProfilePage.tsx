@@ -2,24 +2,11 @@
 /* Talent profile page */
 import Link from 'next/link';
 import { useMemo } from 'react';
-import type { Talent } from '@/lib/data';
-import { hash, month, posXY, rng } from '@/lib/fcg';
+import { autoHeat, hash, heatInner, month } from '@/lib/fcg';
 import { autoClips, pitchLines, type ReelClip } from '@/lib/replay';
 import { DocTitle, useData, useLang, useModal, useToast } from '../providers';
 import { Reel } from '../Reel';
 import { DossierForm, Radar, Signature, StarButton, StatusPill, TalentCard, useReveal } from '../ui';
-
-function heat(t: Talent) {
-  const rr = rng(hash(t.id + 'heat'));
-  const [px, py] = posXY(t);
-  const cx = (px / 100) * 105, cy = (py / 100) * 68;
-  const spread = { gk: [6, 8], def: [16, 12], mid: [22, 16], att: [20, 14] }[t.group];
-  let s = '<defs><radialGradient id="hg"><stop offset="0" stop-color="#8FB3FF" stop-opacity=".9"/><stop offset=".45" stop-color="#1463F3" stop-opacity=".45"/><stop offset="1" stop-color="#1463F3" stop-opacity="0"/></radialGradient></defs><g style="mix-blend-mode:screen">';
-  const blobs = [[cx, cy, 14]];
-  for (let i = 0; i < 9; i++) blobs.push([cx + (rr() - 0.5) * spread[0] * 2, cy + (rr() - 0.5) * spread[1] * 2, 6 + rr() * 9]);
-  blobs.forEach(([x, y, rad]) => { s += `<circle cx="${Math.max(2, Math.min(103, x)).toFixed(1)}" cy="${Math.max(2, Math.min(66, y)).toFixed(1)}" r="${rad.toFixed(1)}" fill="url(#hg)"/>`; });
-  return s + '</g>';
-}
 
 function addMonths(ym: string, n: number) { const [y, m] = ym.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
 
@@ -130,7 +117,7 @@ export default function ProfilePage({ id }: { id: string }) {
         <div className="twocol">
           <div className="reveal">
             <p className="lead" style={{ marginTop: 0 }}>{L(t.bio)}</p>
-            <div className="heat mt-m"><svg viewBox="-3 -3 111 74" dangerouslySetInnerHTML={{ __html: pitchLines() + heat(t) }} /></div>
+            <div className="heat mt-m"><svg viewBox="-3 -3 111 74" dangerouslySetInnerHTML={{ __html: pitchLines() + heatInner(t.heat ?? autoHeat(t)) }} /></div>
             <div className="heat-cap"><span>{tr('pr.heat')}</span><span>{tr('pr.dir')} →</span></div>
           </div>
           <div className="reveal" data-d="1">

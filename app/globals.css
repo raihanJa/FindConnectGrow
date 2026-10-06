@@ -718,8 +718,8 @@ select.sel {
 @media (min-width: 960px) { .reel { grid-template-columns: 8fr 4fr; } }
 .reel-stage { position: relative; background: #0D2148; overflow: hidden; }
 .reel-stage svg { width: 100%; height: auto; }
-.reel-stage .pl { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: .35; }
-.reel-stage .stripe { fill: rgba(255, 255, 255, .025); }
+.reel-stage .pl, .heat .pl { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: .35; }
+.reel-stage .stripe, .heat .stripe { fill: rgba(255, 255, 255, .025); }
 .reel-cap {
   position: absolute; left: 14px; top: 14px; display: flex; gap: 8px; align-items: center;
   font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #fff;
@@ -1094,6 +1094,8 @@ button.linkarrow { padding: 0 0 2px; border: 0; border-bottom: 1.5px solid curre
 .rped-side .seg button { color: #DCE3F2; }
 .rped-side .seg button[aria-pressed="true"] { background: #fff; color: var(--ink); }
 .rped-side .adm-hint { color: #8C9AB8; font-size: 12.5px; }
+.rped-side .field span { color: #8C9AB8; }
+.rped-side input[type="range"] { width: 100%; accent-color: var(--blue); }
 .rped-side .btn--ghost { color: #DCE3F2; border-color: var(--night-line); }
 .rped-side .btn--ghost:hover { background: #fff; color: var(--ink); }
 .rped-ents { display: grid; gap: 2px; max-height: 230px; overflow: auto; scrollbar-width: thin; }

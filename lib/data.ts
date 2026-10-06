@@ -1,5 +1,6 @@
 /* FCG content model — the data itself lives in Supabase (see lib/site-data.ts).
    All talent profiles are fictional. Safeguarding by design: first name + initial only, no photos. */
+import type { HeatSpot } from './fcg';
 import type { ReelClip } from './replay';
 
 export type Loc = { en: string; nl: string };
@@ -14,6 +15,8 @@ export type Talent = {
   bio: Loc; quote: Loc; ovr: number; group: GroupKey;
   /** hand-drawn tactical replay moments (admin portal); empty = automatic moments for the position */
   clips: ReelClip[];
+  /** hand-drawn heatmap zones (admin portal); absent = automatic zones for the position */
+  heat?: HeatSpot[];
 };
 /** Asylum seekers' centre, camp, school league or programme where FCG scouts (until = null) or has scouted.
  *  City level only. Which talent came from which centre is private: the site only gets a count. */

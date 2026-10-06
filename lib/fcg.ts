@@ -75,6 +75,26 @@ export function pitchMiniInner(t: Talent) {
       <circle cx="${x}" cy="${(y * 0.64).toFixed(1)}" r="4.2" fill="#1463F3"/>`;
 }
 
+/* Heatmap: zones [x, y, r] in metres on a 105×68 pitch (attacking → right) */
+export type HeatSpot = [number, number, number];
+export const HEAT_MAX = 20;
+const r1 = (v: number) => Math.round(v * 10) / 10;
+/** Automatic zones around the position (used when no heatmap was drawn in the admin portal) */
+export function autoHeat(t: Pick<Talent, 'id' | 'pos' | 'foot' | 'group'>): HeatSpot[] {
+  const rr = rng(hash(t.id + 'heat'));
+  const [px, py] = posXY(t as Talent);
+  const cx = (px / 100) * 105, cy = (py / 100) * 68;
+  const spread = { gk: [6, 8], def: [16, 12], mid: [22, 16], att: [20, 14] }[t.group];
+  const blobs = [[cx, cy, 14]];
+  for (let i = 0; i < 9; i++) blobs.push([cx + (rr() - 0.5) * spread[0] * 2, cy + (rr() - 0.5) * spread[1] * 2, 6 + rr() * 9]);
+  return blobs.map(([x, y, r]) => [r1(Math.max(2, Math.min(103, x))), r1(Math.max(2, Math.min(66, y))), r1(r)]);
+}
+export function heatInner(spots: HeatSpot[]) {
+  let s = '<defs><radialGradient id="hg"><stop offset="0" stop-color="#8FB3FF" stop-opacity=".9"/><stop offset=".45" stop-color="#1463F3" stop-opacity=".45"/><stop offset="1" stop-color="#1463F3" stop-opacity="0"/></radialGradient></defs><g style="mix-blend-mode:screen">';
+  spots.forEach(([x, y, r]) => { s += `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#hg)"/>`; });
+  return s + '</g>';
+}
+
 /* Radar chart */
 export type RadarSet = { values: number[]; color: string; fill?: number; dash?: boolean };
 export function radarInner(labels: string[], sets: RadarSet[], opt: { size?: number; values?: boolean } = {}) {

@@ -1,6 +1,7 @@
 /* Server-side loader: reads all public content from Supabase and maps it onto the shapes the pages use. */
 import { cache } from 'react';
 import type { Centre, Club, GroupKey, Loc, PosKey, SiteData, Talent } from './data';
+import type { HeatSpot } from './fcg';
 import type { ReelClip, Team, Track } from './replay';
 import { supabase } from './supabase';
 
@@ -72,7 +73,8 @@ export const loadSiteData = cache(async (): Promise<SiteData> => {
       return {
         id: t.id!, name: t.name!, g: t.g as Talent['g'], age: t.age!, pos: t.pos as PosKey, foot: t.foot as Talent['foot'], h: t.h!, no: t.no!,
         region: t.region!, city: t.city!, status: t.status!, joined: t.joined!, ...(t.trial_city ? { trialCity: t.trial_city } : {}),
-        a: t.a!, st, traits: t.traits ?? [], bio: L(t, 'bio'), quote: L(t, 'quote'), ovr: t.ovr!, group: t.group as GroupKey, clips: clipsBy.get(t.id!) ?? []
+        a: t.a!, st, traits: t.traits ?? [], bio: L(t, 'bio'), quote: L(t, 'quote'), ovr: t.ovr!, group: t.group as GroupKey, clips: clipsBy.get(t.id!) ?? [],
+        ...(Array.isArray(t.heat) ? { heat: t.heat as HeatSpot[] } : {})
       };
     }),
     CENTRES: must(centres, 'centres').map((c): Centre => ({
