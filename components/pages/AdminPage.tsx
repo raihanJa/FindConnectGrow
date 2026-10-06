@@ -10,12 +10,12 @@ import { DocTitle, useConfirm, useData, useLang, useToast } from '../providers';
 import { clipComplete, ReplayEditor, toPayload, type DraftClip } from '../ReplayEditor';
 import { PitchMini, Radar, Signature, StatusPill, T } from '../ui';
 
-const MAX_TRAITS = 4;
+const MAX_TRAITS = 4, MAX_CENTRES = 5;
 const thisMonth = () => new Date().toISOString().slice(0, 7);
 const blank = () => ({
   first: '', init: '', gender: 'm', age: '16', no: '', h: '', foot: 'R', pos: 'CM' as PosKey, status: '0', joined: thisMonth(), trial: '',
   region: '', city: '', m: '', goals: '0', assists: '0', cs: '0', sv: '0', bio_en: '', bio_nl: '', quote_en: '', quote_nl: '',
-  a: [60, 60, 60, 60, 60, 60], traits: [] as string[], published: true, consent: false
+  a: [60, 60, 60, 60, 60, 60], traits: [] as string[], centres: [] as string[], published: true, consent: false
 });
 type F = ReturnType<typeof blank>;
 /** "Omar" + "H" → omar-h (accents stripped; non-latin names fall back to "talent-h") */
@@ -177,9 +177,10 @@ function EditTalent({ id, onBack }: { id: string; onBack: (archived: boolean) =>
     Promise.all([
       sb.from('talents').select('*').eq('id', id).single(),
       sb.from('talent_traits').select('trait_key').eq('talent_id', id).order('sort'),
-      sb.from('talent_clips').select('*').eq('talent_id', id).order('sort')
-    ]).then(([tr, tt, tc]) => {
-      const e = tr.error || tt.error || tc.error;
+      sb.from('talent_clips').select('*').eq('talent_id', id).order('sort'),
+      sb.from('talent_centres').select('centre_key').eq('talent_id', id).order('sort')
+    ]).then(([tr, tt, tc, tce]) => {
+      const e = tr.error || tt.error || tc.error || tce.error;
       if (e || !tr.data) { setErr(e?.message || 'not found'); return; }
       const x = tr.data, str = (v: number | null) => String(v ?? 0);
       const [first, init] = x.display_name.split(' ');
@@ -190,7 +191,7 @@ function EditTalent({ id, onBack }: { id: string; onBack: (archived: boolean) =>
           pos: x.position_key as PosKey, status: String(x.status_id), joined: x.joined_on.slice(0, 7), trial: x.trial_location_key ?? '',
           region: x.region_key, city: x.city, m: String(x.matches), goals: str(x.goals), assists: str(x.assists), cs: str(x.clean_sheets), sv: str(x.saves),
           bio_en: x.bio_en, bio_nl: x.bio_nl, quote_en: x.quote_en, quote_nl: x.quote_nl,
-          a: [x.pace, x.technique, x.vision, x.physical, x.work_rate, x.composure], traits: (tt.data ?? []).map((r) => r.trait_key),
+          a: [x.pace, x.technique, x.vision, x.physical, x.work_rate, x.composure], traits: (tt.data ?? []).map((r) => r.trait_key), centres: (tce.data ?? []).map((r) => r.centre_key),
           published: x.published, consent: false
         },
         clips: (tc.data ?? []).map((c): DraftClip => ({
@@ -208,7 +209,7 @@ function EditTalent({ id, onBack }: { id: string; onBack: (archived: boolean) =>
 
 function TalentForm({ edit, onBack }: { edit?: Edit; onBack: () => void }) {
   const { L, s, t, foot } = useLang();
-  const { POS, GROUPS, STATUS, ATTR, REGIONS, ACADEMIES, TRAITS } = useData();
+  const { POS, GROUPS, STATUS, ATTR, REGIONS, ACADEMIES, TRAITS, CENTRES } = useData();
   const [f, setF] = useState<F>(() => edit?.f ?? blank());
   const [clips, setClips] = useState<DraftClip[]>(() => edit?.clips ?? []);
   const [weights, setWeights] = useState<Record<string, number[]>>({});
@@ -234,6 +235,8 @@ function TalentForm({ edit, onBack }: { edit?: Edit; onBack: () => void }) {
 
   const toggleTrait = (k: string) => set({ traits: f.traits.includes(k) ? f.traits.filter((x) => x !== k) : f.traits.length < MAX_TRAITS ? [...f.traits, k] : f.traits });
 
+  const toggleCentre = (k: string) => set({ centres: f.centres.includes(k) ? f.centres.filter((x) => x !== k) : f.centres.length < MAX_CENTRES ? [...f.centres, k] : f.centres });
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const bad = clips.findIndex((c) => !clipComplete(c));
@@ -247,7 +250,7 @@ function TalentForm({ edit, onBack }: { edit?: Edit; onBack: () => void }) {
       pace: f.a[0], technique: f.a[1], vision: f.a[2], physical: f.a[3], work_rate: f.a[4], composure: f.a[5], matches: n(f.m),
       goals: gk ? null : n(f.goals), assists: gk ? null : n(f.assists), clean_sheets: gk ? n(f.cs) : null, saves: gk ? n(f.sv) : null,
       bio_en: f.bio_en.trim(), bio_nl: f.bio_nl.trim(), quote_en: f.quote_en.trim(), quote_nl: f.quote_nl.trim(), published: f.published,
-      clips: clips.map(toPayload)
+      clips: clips.map(toPayload), centres: f.centres
     };
     const { data: id, error } = await sb.rpc(edit ? 'update_talent' : 'create_talent', { p, p_traits: f.traits });
     if (error || !id) { setBusy(false); setErr(error?.message || s('adm.fail', 'Saving failed.')); return; }
@@ -317,6 +320,14 @@ function TalentForm({ edit, onBack }: { edit?: Edit; onBack: () => void }) {
               <option value="">{s('adm.trial.none', 'Not decided yet')}</option>
               {ACADEMIES.map((a) => <option key={a.key} value={a.key}>{a.name}</option>)}</select></label>}
           </div>
+          <div className="field mt-s"><span><T k="adm.centres" en="Scouted at (centre, camp or programme)" /> <span className="muted">{`${f.centres.length}/${MAX_CENTRES}`}</span></span>
+            <div className="chips">
+              {CENTRES.map((c) => {
+                const on = f.centres.includes(c.key);
+                return <button type="button" key={c.key} className="chip" aria-pressed={on} disabled={!on && f.centres.length >= MAX_CENTRES} onClick={() => toggleCentre(c.key)}>{`${L(c.name)} · ${c.city}`}</button>;
+              })}
+            </div></div>
+          <T as="p" className="muted adm-hint" k="adm.centres.h" en="Private: the site only shows how many talents were scouted at a centre, never which ones." />
         </fieldset>
 
         <fieldset className="adm-sec"><legend className="kicker"><span className="num">04</span><T k="adm.s4" en="Attributes" /></legend>

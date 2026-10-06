@@ -1,6 +1,6 @@
 /* Server-side loader: reads all public content from Supabase and maps it onto the shapes the pages use. */
 import { cache } from 'react';
-import type { GroupKey, Loc, PosKey, SiteData, Talent } from './data';
+import type { Centre, Club, GroupKey, Loc, PosKey, SiteData, Talent } from './data';
 import type { ReelClip, Team, Track } from './replay';
 import { supabase } from './supabase';
 
@@ -14,7 +14,7 @@ function must<T>(r: { data: T | null; error: { message: string } | null }, what:
 }
 
 export const loadSiteData = cache(async (): Promise<SiteData> => {
-  const [regions, locations, groups, positions, statuses, attrs, traits, talents, clips, tiers, impact, alloc, team, metrics] = await Promise.all([
+  const [regions, locations, groups, positions, statuses, attrs, traits, talents, clips, tiers, impact, alloc, team, metrics, centres, centreKinds, centreCounts, clubs, clubLevels] = await Promise.all([
     supabase.from('regions').select('*').order('sort'),
     supabase.from('locations').select('*').order('sort'),
     supabase.from('position_groups').select('*').order('sort'),
@@ -28,8 +28,14 @@ export const loadSiteData = cache(async (): Promise<SiteData> => {
     supabase.from('donation_impact_items').select('*').order('sort'),
     supabase.from('fund_allocation').select('*').order('sort'),
     supabase.from('team_members').select('*').order('sort'),
-    supabase.from('site_metrics').select('*').order('sort')
+    supabase.from('site_metrics').select('*').order('sort'),
+    supabase.from('centres').select('*').order('sort'),
+    supabase.from('centre_kinds').select('*').order('sort'),
+    supabase.rpc('centre_talent_counts'),
+    supabase.from('clubs').select('*').order('sort'),
+    supabase.from('club_levels').select('*').order('sort')
   ]);
+  const counts = new Map(must(centreCounts, 'centre counts').map((c) => [c.centre_key, c.talents]));
 
   const places = must(locations, 'locations').map((l) => ({ key: l.key, name: l.name, ll: [l.lng, l.lat] as [number, number], kind: l.kind }));
   const hub = places.find((p) => p.kind === 'hub');
@@ -69,6 +75,18 @@ export const loadSiteData = cache(async (): Promise<SiteData> => {
         a: t.a!, st, traits: t.traits ?? [], bio: L(t, 'bio'), quote: L(t, 'quote'), ovr: t.ovr!, group: t.group as GroupKey, clips: clipsBy.get(t.id!) ?? []
       };
     }),
+    CENTRES: must(centres, 'centres').map((c): Centre => ({
+      key: c.key, kind: c.kind_key, name: L(c, 'name'), city: c.city, country: c.country, ...(c.region_key ? { region: c.region_key } : {}),
+      ll: [Number(c.lng), Number(c.lat)], since: c.active_since, ...(c.active_until != null ? { until: c.active_until } : {}),
+      scouts: c.scouts, note: L(c, 'note'), talents: counts.get(c.key) ?? 0
+    })),
+    CENTRE_KINDS: Object.fromEntries(must(centreKinds, 'centre kinds').map((k) => [k.key, L(k, 'label')])),
+    CLUBS: must(clubs, 'clubs').map((c): Club => ({
+      key: c.key, name: c.name, city: c.city, country: c.country, level: c.level_key, league: c.league, squads: c.squads as Club['squads'],
+      ...(c.tier_key ? { tier: c.tier_key } : {}), offers: c.offers, ll: [Number(c.lng), Number(c.lat)], since: c.partner_since,
+      placements: c.placements, note: L(c, 'note')
+    })),
+    CLUB_LEVELS: Object.fromEntries(must(clubLevels, 'club levels').map((k) => [k.key, L(k, 'label')])),
     TIERS: must(tiers, 'partnership tiers').map((t) => ({ key: t.key, name: t.name, price: t.price_eur, featured: t.featured })),
     IMPACT: must(impact, 'impact items').map((i) => ({ k: i.key, cost: i.cost_eur })),
     ALLOC: must(alloc, 'fund allocation').map((a) => ({ key: a.key, label: L(a, 'label'), pct: a.percent })),

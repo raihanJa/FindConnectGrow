@@ -15,6 +15,18 @@ export type Talent = {
   /** hand-drawn tactical replay moments (admin portal); empty = automatic moments for the position */
   clips: ReelClip[];
 };
+/** Asylum seekers' centre, camp, school league or programme where FCG scouts (until = null) or has scouted.
+ *  City level only. Which talent came from which centre is private: the site only gets a count. */
+export type Centre = {
+  key: string; kind: string; name: Loc; city: string; country: string; region?: string; ll: [number, number];
+  since: number; until?: number; scouts: number; note: Loc; talents: number;
+};
+/** European partner club where verified talents can go for a trial, stage or contract — mostly mid-table,
+ *  relegation-battling, semi-pro and amateur clubs. Only a count of placements is public, never which talent. */
+export type Club = {
+  key: string; name: string; city: string; country: string; level: string; league: string; squads: 'm' | 'f' | 'mf';
+  tier?: string; offers: string[]; ll: [number, number]; since: number; placements: number; note: Loc;
+};
 export type Tier = { key: string; name: string; price: number | null; featured: boolean };
 export type ImpactItem = { k: string; cost: number };
 export type Alloc = { key: string; label: Loc; pct: number };
@@ -30,5 +42,7 @@ export type SiteData = {
   STATUS: Loc[]; ATTR: Loc[];
   TRAITS: Record<string, Loc>;
   TALENTS: Talent[];
+  CENTRES: Centre[]; CENTRE_KINDS: Record<string, Loc>;
+  CLUBS: Club[]; CLUB_LEVELS: Record<string, Loc>;
   TIERS: Tier[]; IMPACT: ImpactItem[]; ALLOC: Alloc[]; TEAM: TeamMember[]; METRICS: Record<string, Metric>;
 };

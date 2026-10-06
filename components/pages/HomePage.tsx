@@ -354,6 +354,7 @@ export default function HomePage() {
               <div className="map-facts"><div><b>{countFor(selected)}</b><span>{t('map.f1')}</span></div><div><b>{R.scouts}</b><span>{t('map.f2')}</span></div><div><b>{R.since}</b><span>{t('map.f3')}</span></div></div>
               <div><Link className="btn btn--light" href={`/talents?region=${selected}`}>{t('map.cta').replace('{r}', L(R.name))} <span className="arr">→</span></Link></div>
               <div className="map-list" role="group" aria-label={t('map.list')}>{regionKeys.map((k) => <button key={k} data-reg={k} aria-pressed={k === selected} onClick={() => select(k)}>{L(REGIONS[k].name)}</button>)}</div>
+              <p className="mt-s"><Link className="linkarrow" href="/centres" style={{ color: '#fff' }}><T k="h.centres" en="Also in camps &amp; asylum centres in Europe" /> →</Link></p>
             </aside>
           </div>
         </div>

@@ -14,6 +14,14 @@ export type Database = {
       donations: T<
         { amount_eur: number; anonymous: boolean; created_at: string; donor_email: string; donor_name: string; frequency: string; id: string; lang: string; payment_method: string; region_key: string | null; status: string; wants_updates: boolean },
         { amount_eur: number; anonymous?: boolean; created_at?: string; donor_email: string; donor_name: string; frequency: string; id?: string; lang?: string; payment_method: string; region_key?: string | null; status?: string; wants_updates?: boolean }>
+      centre_kinds: T<{ key: string; label_en: string; label_nl: string; sort: number }, { key: string; label_en: string; label_nl: string; sort: number }>
+      centres: T<
+        { active_since: number; active_until: number | null; archived_at: string | null; city: string; country: string; created_at: string; key: string; kind_key: string; lat: number; lng: number; name_en: string; name_nl: string; note_en: string; note_nl: string; published: boolean; region_key: string | null; scouts: number; sort: number; updated_at: string },
+        { active_since: number; active_until?: number | null; archived_at?: string | null; city: string; country: string; created_at?: string; key: string; kind_key: string; lat: number; lng: number; name_en: string; name_nl: string; note_en?: string; note_nl?: string; published?: boolean; region_key?: string | null; scouts?: number; sort?: number; updated_at?: string }>
+      club_levels: T<{ key: string; label_en: string; label_nl: string; sort: number }, { key: string; label_en: string; label_nl: string; sort: number }>
+      clubs: T<
+        { archived_at: string | null; city: string; country: string; created_at: string; key: string; lat: number; league: string; level_key: string; lng: number; name: string; note_en: string; note_nl: string; offers: string[]; partner_since: number; placements: number; published: boolean; sort: number; squads: string; tier_key: string | null; updated_at: string },
+        { archived_at?: string | null; city: string; country: string; created_at?: string; key: string; lat: number; league: string; level_key: string; lng: number; name: string; note_en?: string; note_nl?: string; offers?: string[]; partner_since: number; placements?: number; published?: boolean; sort?: number; squads?: string; tier_key?: string | null; updated_at?: string }>
       dossier_request_talents: T<{ request_id: string; talent_id: string }, { request_id: string; talent_id: string }>
       dossier_requests: T<
         { club: string; created_at: string; email: string; id: string; lang: string; message: string | null; name: string; nda_accepted: boolean; role: string; status: string },
@@ -47,6 +55,7 @@ export type Database = {
       talent_clips: T<
         { ball: Json; duration: number; ents: Json; events: Json; flash_at: number | null; flash_kind: string | null; match_en: string; match_nl: string; minute: number; sort: number; talent_id: string; title_en: string; title_nl: string },
         { ball: Json; duration: number; ents: Json; events?: Json; flash_at?: number | null; flash_kind?: string | null; match_en: string; match_nl: string; minute: number; sort: number; talent_id: string; title_en: string; title_nl: string }>
+      talent_centres: T<{ centre_key: string; sort: number; talent_id: string }, { centre_key: string; sort?: number; talent_id: string }>
       talent_traits: T<{ sort: number; talent_id: string; trait_key: string }, { sort: number; talent_id: string; trait_key: string }>
       talents: T<
         { age: number; archived_at: string | null; assists: number | null; bio_en: string; bio_nl: string; city: string; clean_sheets: number | null; composure: number; created_at: string; display_name: string; foot: string; gender: string; goals: number | null; height_cm: number; id: string; joined_on: string; matches: number; pace: number; physical: number; position_key: string; published: boolean; quote_en: string; quote_nl: string; region_key: string; saves: number | null; shirt_no: number; sort: number; status_id: number; technique: number; trial_location_key: string | null; updated_at: string; vision: number; work_rate: number },
@@ -67,8 +76,10 @@ export type Database = {
       }
     }
     Functions: {
+      centre_talent_counts: { Args: Record<PropertyKey, never>; Returns: { centre_key: string; talents: number }[] }
       create_talent: { Args: { p: Json; p_traits?: string[] }; Returns: string }
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
+      set_talent_centres: { Args: { p_centres: string[]; p_id: string }; Returns: undefined }
       set_talent_archived: { Args: { p_archived: boolean; p_id: string }; Returns: undefined }
       update_talent: { Args: { p: Json; p_traits?: string[] }; Returns: string }
       submit_dossier_request: {

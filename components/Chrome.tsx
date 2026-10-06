@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLang, useShortlist, useToast } from './providers';
 import { StarIcon, T } from './ui';
 
-const NAV: [string, string, string, string][] = [['talents', '/talents', 'nav.portal', 'Talent portal'], ['clubs', '/clubs', 'nav.clubs', 'For clubs'], ['about', '/about', 'nav.about', 'Mission'], ['support', '/support', 'nav.support', 'Support us']];
+const NAV: [string, string, string, string][] = [['talents', '/talents', 'nav.portal', 'Talent portal'], ['centres', '/centres', 'nav.centres', 'Centres'], ['partner-clubs', '/partner-clubs', 'nav.partners', 'Partner clubs'], ['clubs', '/clubs', 'nav.clubs', 'For clubs'], ['about', '/about', 'nav.about', 'Mission'], ['support', '/support', 'nav.support', 'Support us']];
 
 function LangSwitch() {
   const { lang, setLang } = useLang();
@@ -71,8 +71,8 @@ export function Footer() {
       </div>
       <div className="foot-cols">
         <div><img className="foot-logo" src="/assets/fcg-mark-light.png" alt="FCG" /><T as="p" style={{ color: '#A9B6CF', maxWidth: '30ch', fontSize: 14, marginTop: 16 }} k="foot.about" en="We find football talent in conflict-affected regions and connect them to the European game." /></div>
-        <div><T as="h4" k="foot.h1" en="Explore" /><ul><li><T as={Link} href="/talents" k="nav.portal" en="Talent portal" /></li><li><T as={Link} href="/#map" k="foot.map" en="Where we scout" /></li><li><T as={Link} href="/#pathway" k="foot.path" en="The pathway" /></li></ul></div>
-        <div><T as="h4" k="foot.h2" en="Clubs" /><ul><li><T as={Link} href="/clubs#process" k="foot.how" en="How it works" /></li><li><T as={Link} href="/clubs#models" k="foot.models" en="Partnerships" /></li><li><T as={Link} href="/clubs#shortlist" k="foot.sl" en="Your shortlist" /></li></ul></div>
+        <div><T as="h4" k="foot.h1" en="Explore" /><ul><li><T as={Link} href="/talents" k="nav.portal" en="Talent portal" /></li><li><T as={Link} href="/#map" k="foot.map" en="Where we scout" /></li><li><T as={Link} href="/centres" k="foot.centres" en="Camps &amp; asylum centres" /></li><li><T as={Link} href="/#pathway" k="foot.path" en="The pathway" /></li></ul></div>
+        <div><T as="h4" k="foot.h2" en="Clubs" /><ul><li><T as={Link} href="/partner-clubs" k="foot.partners" en="Our partner clubs" /></li><li><T as={Link} href="/clubs#process" k="foot.how" en="How it works" /></li><li><T as={Link} href="/clubs#models" k="foot.models" en="Partnerships" /></li><li><T as={Link} href="/clubs#shortlist" k="foot.sl" en="Your shortlist" /></li></ul></div>
         <div><T as="h4" k="foot.h3" en="Organisation" /><ul><li><T as={Link} href="/about" k="nav.about" en="Mission" /></li><li><T as={Link} href="/about#safeguarding" k="foot.safe" en="Safeguarding" /></li><li><T as={Link} href="/about#nominate" k="foot.nom" en="Nominate a talent" /></li></ul></div>
         <div><T as="h4" k="foot.h4" en="Contact" /><ul><li><a href="mailto:hello@fcg.example">hello@fcg.example</a></li><li><T as={Link} href="/support" k="nav.support" en="Support us" /></li><li><span style={{ color: '#7D8AA6' }}>Amsterdam, NL</span></li></ul></div>
       </div>

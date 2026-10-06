@@ -5,14 +5,14 @@
 export const NL: Record<string, string> = {
   /* titles */
   'title.home': 'FCG — Find Connect & Grow', 'title.talents': 'Talentenportaal — FCG', 'title.clubs': 'Voor clubs — FCG',
-  'title.about': 'Missie — FCG', 'title.support': 'Steun ons — FCG',
+  'title.about': 'Missie — FCG', 'title.support': 'Steun ons — FCG', 'title.centres': 'Centra — FCG', 'title.partners': 'Partnerclubs — FCG',
 
   /* chrome */
   'skip': 'Naar inhoud', 'mast.l': 'Editie N°01 — Talent zonder grenzen', 'mast.m': 'Scouting in conflictgebieden', 'mast.r': 'Concepteditie · 2026',
-  'nav.home': 'Home', 'nav.portal': 'Talentenportaal', 'nav.clubs': 'Voor clubs', 'nav.about': 'Missie', 'nav.support': 'Steun ons', 'nav.donate': 'Doneer',
+  'nav.home': 'Home', 'nav.portal': 'Talentenportaal', 'nav.centres': 'Centra', 'nav.partners': 'Partnerclubs', 'nav.clubs': 'Voor clubs', 'nav.about': 'Missie', 'nav.support': 'Steun ons', 'nav.donate': 'Doneer',
   'foot.newsk': 'De Dispatch — maandelijks', 'foot.news': 'Een korte brief uit het veld: nieuwe talenten, verhalen van onze scouts en waar we naartoe gaan.',
   'foot.ph': 'jouw@email.nl', 'foot.sub': 'Aanmelden →', 'foot.about': 'Wij vinden voetbaltalent in conflictgebieden en verbinden het met het Europese voetbal.',
-  'foot.h1': 'Ontdek', 'foot.map': 'Waar we scouten', 'foot.path': 'Het traject', 'foot.h2': 'Clubs', 'foot.how': 'Hoe het werkt', 'foot.models': 'Partnerschappen',
+  'foot.h1': 'Ontdek', 'foot.map': 'Waar we scouten', 'foot.centres': 'Kampen &amp; azc’s', 'foot.path': 'Het traject', 'foot.h2': 'Clubs', 'foot.partners': 'Onze partnerclubs', 'foot.how': 'Hoe het werkt', 'foot.models': 'Partnerschappen',
   'foot.sl': 'Jouw shortlist', 'foot.h3': 'Organisatie', 'foot.safe': 'Bescherming', 'foot.nom': 'Draag een talent voor', 'foot.h4': 'Contact',
   'foot.disc': 'Conceptwebsite — alle talentprofielen en cijfers zijn fictief.',
 
@@ -212,7 +212,42 @@ export const NL: Record<string, string> = {
   'adm.rp.rechelp': 'Ingedrukt houden en tekenen: de klok loopt terwijl je de route van de geselecteerde speler (of degene die je pakt) tekent. Alle anderen bewegen mee, zodat je passes kunt timen.',
   'adm.rp.delkey': 'Keyframe hier wissen', 'adm.rp.reset': 'Route wissen', 'adm.rp.delent': 'Speler verwijderen',
   'adm.rp.flash': 'Uitroep', 'adm.rp.at': 'Op', 'adm.rp.evs': 'Captions', 'adm.rp.jump': 'Ga naar dit moment',
-  'adm.rp.ev_en': 'Caption — Engels', 'adm.rp.ev_nl': 'Caption — Nederlands', 'adm.rp.evdel': 'Caption verwijderen', 'adm.rp.evadd': 'Caption op'
+  'adm.rp.ev_en': 'Caption — Engels', 'adm.rp.ev_nl': 'Caption — Nederlands', 'adm.rp.evdel': 'Caption verwijderen', 'adm.rp.evadd': 'Caption op',
+  'adm.centres': 'Gescout bij (centrum, kamp of programma)', 'adm.centres.h': 'Privé: de site toont alleen hoeveel talenten bij een centrum gescout zijn, nooit welke.',
+  /* centres */
+  'h.centres': 'Ook in kampen &amp; azc’s in Europa',
+  'ce.h1': 'Van kampvelden <span class="it blue">tot azc’s.</span>',
+  'ce.lead': 'Talent blijft niet in de regio die het ontvluchtte. Naast de herkomstregio’s scout FCG in vluchtelingenkampen, scholencompetities en asielzoekerscentra in heel Europa — met dezelfde ogen, dezelfde verificatie en dezelfde eerlijke kans.',
+  'ce.note': '● Fictieve conceptdata · locaties alleen op stadsniveau · publiek wordt geen speler aan een centrum gekoppeld',
+  'ce.n1': 'Centra nu actief', 'ce.n2': 'Azc’s in Europa', 'ce.n3': 'Landen', 'ce.n4': 'Talenten in het portaal gescout bij een centrum',
+  'ce.s1k': 'De kaart', 'ce.s1t': 'Waar we scouten <span class="it" style="color:#8FB3FF">— en waar we zijn geweest.</span>',
+  'ce.s1l': 'Elke stip is een centrum, kamp of programma. Gevulde stippen zijn nu actief; open stippen zijn plekken waar we eerder scoutten.',
+  'ce.leg1': 'Nu actief', 'ce.leg2': 'Eerder gescout',
+  'ce.s2k': 'Alle centra', 'ce.s2t': 'Kampen, scholen, <span class="it blue">azc’s.</span>',
+  'ce.s3k': 'Zo werken we in een centrum', 'ce.s3t': 'Eerst een veld. <span class="it blue">Pas veel later een profiel.</span>',
+  'ce.v1t': 'Met het centrum, nooit eromheen', 'ce.v1p': 'We werken alleen waar de leiding van het centrum, de kampautoriteit of de school akkoord is — en altijd samen met hun eigen medewerkers.',
+  'ce.v2t': 'Open voor iedereen', 'ce.v2p': 'Trainingen en toernooien staan open voor iedere bewoner, niet alleen voor de grootste talenten. Voetbal gaat vóór scouting.',
+  'ce.v3t': 'Waar een speler woont blijft privé', 'ce.v3p': 'We tonen centra op stadsniveau en tellen alleen hoeveel talenten er gescout zijn. Welke speler uit welk centrum komt, weten alleen FCG-medewerkers.',
+  'ce.v4t': 'Verblijfsstatus beslist nooit', 'ce.v4p': 'Een verblijfsvergunning of asielprocedure is nooit een reden om een speler te laten vallen. Onze juristen zorgen dat elke volgende stap legaal en veilig is.',
+  'ce.d1t': 'Werk je in een centrum?', 'ce.d1p': 'Trainer, leraar of maatschappelijk werker? Vertel ons over een speler die we moeten zien — of nodig ons uit voor een open training.',
+  'ce.d2t': 'Lees ons beschermingsbeleid', 'ce.d2p': 'Hoe we spelers — vaak minderjarig — in elke stap van het traject beschermen.',
+  /* partner clubs */
+  'pc.h1': 'Geen grootmachten. <span class="it blue">Gewoon speelminuten.</span>',
+  'pc.lead': 'Dit zijn de clubs waar FCG-talenten naartoe kunnen voor een proeftraining, een stage of — ooit — een contract. Bewust geen topclubs: middenmoters en degradatiekandidaten, semiprofs en amateurclubs die jonge spelers echt laten spelen en goed voor ze zorgen.',
+  'pc.note': '● Fictieve conceptdata · clubnamen zijn verzonnen · alleen het aantal spelers dat een club heeft ontvangen is openbaar',
+  'pc.n1': 'Partnerclubs', 'pc.n2': 'Profclubs', 'pc.n3': 'Semiprof- &amp; amateurclubs', 'pc.n5': 'FCG-spelers tot nu toe ontvangen',
+  'pc.s1k': 'Het netwerk', 'pc.s1t': 'Van de hub in Amsterdam <span class="it" style="color:#8FB3FF">tot een veld bij jou in de buurt.</span>',
+  'pc.s1l': 'Elke stip is een partnerclub. Gevulde stippen zijn profclubs; open stippen zijn semiprof- en amateurclubs — vaak de allereerste club van een speler in Europa.',
+  'pc.leg1': 'Profclub', 'pc.leg2': 'Semiprof &amp; amateur',
+  'pc.s2k': 'Alle partnerclubs', 'pc.s2t': 'Van Eredivisie tot Vierde Klasse — <span class="it blue">elke stap telt.</span>',
+  'pc.s3k': 'Waarom deze clubs', 'pc.s3t': 'Speelminuten boven clublogo’s. <span class="it blue">Mensen boven prestige.</span>',
+  'pc.v1t': 'Eerst speeltijd', 'pc.v1p': 'Een 17-jarige op de bank bij een topclub leert weinig. Bij een middenmoter of degradatiekandidaat krijgen jonge spelers echte minuten — en echte feedback.',
+  'pc.v2t': 'Een ladder, geen loterij', 'pc.v2p': 'Amateurclubs bij de azc’s zijn vaak het eerste team van een speler in Europa. Vandaar is de stap naar semiprof- en profvoetbal kleiner, en niemand hoeft die alleen te zetten.',
+  'pc.v3t': 'Eén charter voor elke club', 'pc.v3p': 'Elke partner, van Eredivisie tot Vierde Klasse, tekent ons beschermingscharter: een vertrouwenspersoon, school- of taallessen, en nooit kosten voor een familie.',
+  'pc.v4t': 'Regels vóór contracten', 'pc.v4p': 'Spelers onder de 18 verhuizen alleen binnen de uitzonderingen van FIFA RSTP Artikel 19. Stages worden door FCG begeleid, en een solidariteitsbijdrage van een toekomstige transfer gaat terug naar de thuisgemeenschap.',
+  'pc.d1t': 'Hoort jouw club op deze kaart?', 'pc.d1p': 'Prof, semiprof of amateur: bekijk hoe een partnerschap werkt — voor amateurclubs is het gratis.',
+  'pc.d2t': 'Lees ons beschermingscharter', 'pc.d2p': 'Waar elke partnerclub zich aan verbindt voordat er ook maar één FCG-speler langskomt.',
+
 };
 
 export const TX: Record<string, { en: string; nl: string }> = {
@@ -349,5 +384,20 @@ export const TX: Record<string, { en: string; nl: string }> = {
   'a.tm5': { en: 'Video & data analyst', nl: 'Video- & data-analist' }, 'a.f2e': { en: 'Other', nl: 'Anders' },
   'a.ok.t': { en: 'Nomination received', nl: 'Voordracht ontvangen' },
   'a.ok.p': { en: 'A local FCG scout will follow up within four weeks. (Concept — nothing was sent.)', nl: 'Een lokale FCG-scout neemt binnen vier weken contact op. (Concept — er is niets verstuurd.)' },
-  'a.again': { en: 'Nominate another player', nl: 'Nog een speler voordragen' }
+  'a.again': { en: 'Nominate another player', nl: 'Nog een speler voordragen' },
+  /* centres */
+  'ce.since': { en: 'since', nl: 'sinds' }, 'ce.now': { en: 'Scouting now', nl: 'Nu actief' }, 'ce.past': { en: 'Scouted before', nl: 'Eerder gescout' },
+  'ce.show': { en: 'Show', nl: 'Toon' }, 'ce.show.all': { en: 'All', nl: 'Alle' }, 'ce.show.now': { en: 'Active', nl: 'Actief' }, 'ce.show.past': { en: 'Past', nl: 'Eerder' },
+  'ce.kind': { en: 'Type of centre', nl: 'Soort centrum' }, 'ce.list': { en: 'All centres', nl: 'Alle centra' }, 'ce.onmap': { en: 'Show on map', nl: 'Toon op kaart' },
+  'ce.aria': { en: 'Map of camps, schools and asylum centres where FCG scouts', nl: 'Kaart van kampen, scholen en azc’s waar FCG scout' },
+  /* partner clubs */
+  'pc.community': { en: 'Community partner', nl: 'Buurtpartner' }, 'pc.list': { en: 'All partner clubs', nl: 'Alle partnerclubs' },
+  'pc.aria': { en: 'Map of the European partner clubs of FCG', nl: 'Kaart van de Europese partnerclubs van FCG' },
+  'pc.squad': { en: 'Squad', nl: 'Selectie' }, 'pc.level': { en: 'Level', nl: 'Niveau' },
+  'pc.show.all': { en: 'All', nl: 'Alle' }, 'pc.show.m': { en: 'Men', nl: 'Mannen' }, 'pc.show.f': { en: 'Women', nl: 'Vrouwen' },
+  'pc.sq.m': { en: 'Men', nl: 'Mannen' }, 'pc.sq.f': { en: 'Women', nl: 'Vrouwen' }, 'pc.sq.mf': { en: 'Both', nl: 'Beide' },
+  'pc.f1': { en: 'FCG players hosted', nl: 'FCG-spelers ontvangen' }, 'pc.f2': { en: 'Squads', nl: 'Selecties' }, 'pc.f3': { en: 'Partner since', nl: 'Partner sinds' },
+  'pc.o.housing': { en: 'Housing', nl: 'Huisvesting' }, 'pc.o.school': { en: 'School', nl: 'School' }, 'pc.o.language': { en: 'Language lessons', nl: 'Taallessen' },
+  'pc.o.youth': { en: 'Youth academy', nl: 'Jeugdopleiding' }, 'pc.o.trial': { en: 'Trials', nl: 'Proeftrainingen' },
+
 };
