@@ -2,7 +2,7 @@
 /* Admin: draw tactical replay moments by hand — drag players/ball to set keyframes, or record a route in real time */
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { at, CLIPS, FLASHES, pitchLines, type ReelClip, type Team, type Track } from '@/lib/replay';
-import { useLang } from './providers';
+import { useConfirm, useLang } from './providers';
 import { Reel, sec } from './Reel';
 
 export const MAX_CLIPS = 5;
@@ -48,6 +48,7 @@ function setKey(tr: Track, t: number, x: number, y: number): Track {
 
 export function ReplayEditor({ clips, setClips, no }: { clips: DraftClip[]; setClips: Dispatch<SetStateAction<DraftClip[]>>; no: string }) {
   const { s, L } = useLang();
+  const confirm = useConfirm();
   const [cur, setCur] = useState(0);
   const [tpl, setTpl] = useState('');
   const [preview, setPreview] = useState(false);
@@ -57,7 +58,10 @@ export function ReplayEditor({ clips, setClips, no }: { clips: DraftClip[]; setC
   const reelClips = useMemo(() => clips.map(toReel).sort((a, b) => a.min - b.min), [clips]);
 
   const add = () => { setClips((cs) => [...cs, newClip(tpl)]); setCur(clips.length); setPreview(false); };
-  const remove = () => { if (confirm(s('adm.rp.delq', 'Delete this moment?'))) { setClips((cs) => cs.filter((_, j) => j !== i)); setCur(Math.max(0, i - 1)); } };
+  const remove = async () => {
+    if (!(await confirm({ title: s('adm.rp.delq', 'Delete this moment?'), body: s('adm.rp.delb', 'The drawn routes and captions of this moment are removed from the form.'), ok: s('adm.rp.delok', 'Delete'), danger: true }))) return;
+    setClips((cs) => cs.filter((_, j) => j !== i)); setCur(Math.max(0, i - 1));
+  };
 
   return (
     <div className="rped">

@@ -1,5 +1,5 @@
 'use client';
-/* FCG — shared runtime: i18n, shortlist, toast, modal */
+/* FCG — shared runtime: i18n, shortlist, toast, modal, confirm */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Loc, SiteData, Talent } from '@/lib/data';
 import { loc, sx, tx, type Lang } from '@/lib/fcg';
@@ -118,13 +118,13 @@ export function useStarToggle() {
 }
 
 /* ---------- modal ---------- */
-type ModalOpt = { wide?: boolean; onClose?: () => void };
+type ModalOpt = { wide?: boolean; narrow?: boolean; onClose?: () => void };
 type ModalCtx = { open: (content: ReactNode, opt?: ModalOpt) => void; close: () => void };
 const ModalContext = createContext<ModalCtx | null>(null);
 export const useModal = () => useContext(ModalContext)!;
 
 function ModalProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<{ open: boolean; content: ReactNode; wide: boolean; n: number }>({ open: false, content: null, wide: false, n: 0 });
+  const [state, setState] = useState<{ open: boolean; content: ReactNode; size: string; n: number }>({ open: false, content: null, size: '', n: 0 });
   const boxRef = useRef<HTMLDivElement>(null);
   const lastFocus = useRef<HTMLElement | null>(null);
   const onCloseCb = useRef<(() => void) | undefined>(undefined);
@@ -141,7 +141,7 @@ function ModalProvider({ children }: { children: ReactNode }) {
   const open = useCallback((content: ReactNode, opt: ModalOpt = {}) => {
     lastFocus.current = document.activeElement as HTMLElement | null; onCloseCb.current = opt.onClose;
     isOpen.current = true;
-    setState((s) => ({ open: true, content, wide: !!opt.wide, n: s.n + 1 }));
+    setState((s) => ({ open: true, content, size: opt.wide ? ' wide' : opt.narrow ? ' narrow' : '', n: s.n + 1 }));
     document.body.style.overflow = 'hidden';
   }, []);
 
@@ -166,13 +166,36 @@ function ModalProvider({ children }: { children: ReactNode }) {
       {children}
       <div className={'modal' + (state.open ? ' open' : '')}>
         <div className="modal-bg" data-close onClick={close}></div>
-        <div className={'modal-box' + (state.wide ? ' wide' : '')} role="dialog" aria-modal="true" ref={boxRef}>
+        <div className={'modal-box' + state.size} role="dialog" aria-modal="true" ref={boxRef}>
           <button className="modal-x" data-close aria-label="Close" onClick={close}>×</button>
           <div className="modal-c" key={state.n}>{state.content}</div>
         </div>
       </div>
     </ModalContext.Provider>
   );
+}
+
+/* ---------- confirm: styled replacement for window.confirm ---------- */
+type ConfirmOpt = { title: string; body?: string; ok: string; cancel?: string; danger?: boolean };
+/** `if (!(await confirm({ title, ok }))) return;` — resolves false on cancel, Escape, × or backdrop. Focus starts on Cancel. */
+export function useConfirm() {
+  const modal = useModal(), { s } = useLang();
+  return useCallback((o: ConfirmOpt) => new Promise<boolean>((resolve) => {
+    let settled = false;
+    const end = (v: boolean) => { if (settled) return; settled = true; resolve(v); if (v) modal.close(); };
+    modal.open(
+      <div className="confirm">
+        <p className="kicker">{s('confirm.k', 'Please confirm')}</p>
+        <h2 className="h2">{o.title}</h2>
+        {o.body && <p className="muted">{o.body}</p>}
+        <div className="confirm-act">
+          <button type="button" className="btn btn--ghost" onClick={modal.close}>{o.cancel ?? s('confirm.no', 'Cancel')}</button>
+          <button type="button" className={'btn ' + (o.danger ? 'btn--danger' : 'btn--blue')} onClick={() => end(true)}>{o.ok}</button>
+        </div>
+      </div>,
+      { narrow: true, onClose: () => end(false) }
+    );
+  }), [modal, s]);
 }
 
 export function Providers({ data, children }: { data: SiteData; children: ReactNode }) {

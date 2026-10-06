@@ -1,5 +1,5 @@
 'use server';
-/* Refresh the statically rendered pages right after an admin adds a talent (instead of waiting for ISR). */
+/* Refresh the statically rendered pages right after an admin adds, edits or archives a talent (instead of waiting for ISR). */
 import { createClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import type { Database } from '@/lib/database.types';
